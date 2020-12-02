@@ -14,7 +14,7 @@ bin/memory-hierarchy-simulator: int/main.o int/CommandParser.o
 	g++ -o bin/memory-hierarchy-simulator int/main.o int/CommandParser.o
 
 # Create intermediate .o files for linking
-int/main.o: src/main.cpp
+int/main.o: src/main.cpp src/CommandParser.h
 	g++ -o int/main.o -c src/main.cpp
 int/CommandParser.o: src/CommandParser.cpp src/CommandParser.h
 	g++ -o int/CommandParser.o -c src/CommandParser.cpp
