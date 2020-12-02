@@ -1,11 +1,25 @@
+#include "CommandParser.h"
+
 #include <iostream>
 
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
-  std::cout << "Hello World!" << std::endl;
+  CommandParser commandParser{ argc, argv, "--" };
 
-  for (size_t i = 1; i < argc; i++)
-    std::cout << argv[i] << std::endl;
+  if (commandParser.IsCommandPresent("help")
+      || commandParser.IsCommandEmpty("c")
+      || commandParser.IsCommandEmpty("t"))
+  {
+    std::cout << 
+      "\n"
+      "\tUsage: " << argv[0] << " --c trace.config --t trace.dat\n"
+      "\n"
+      "\t\t --c \t\tfile path to trace configuration file\n"
+      "\t\t --t \t\tfile path to trace file\n"
+      << std::endl;
 
-  return 0;
+    exit(-1);
+  }
+
+  exit(0);
 }
