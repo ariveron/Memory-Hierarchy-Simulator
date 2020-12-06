@@ -1,6 +1,8 @@
 # Commands not associated with a file
-.PHONY: all clean rebuild run test1
+.PHONY: all setup clean rebuild run test1
 all: bin/memory-hierarchy-simulator
+setup:
+	./setup.sh
 clean:
 	rm -r -f bin/* int/*
 rebuild: clean all
