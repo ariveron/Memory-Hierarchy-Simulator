@@ -18,8 +18,11 @@ void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHi
 
 void TraceLogger::PrintLogHeader() const
 {
-  // TODO
-  std::cout << "Log Header" << std::endl;
+  std::cout <<
+    "Virtual  Virt.  Page TLB  PT   Phys        DC  DC  \n"
+    "Address  Page # Off. Res. Res. Pg # DC Tag Idx Res.\n"
+    "-------- ------ ---- ---- ---- ---- ------ --- ----\n"
+    << std::flush;
 }
 
 void TraceLogger::PrintLogFooter() const
