@@ -3,6 +3,9 @@
 #include "Trace.h"
 #include "TraceLogger.h"
 #include "CPU.h"
+#include "TLB.h"
+#include "PT.h"
+#include "DC.h"
 
 #include <iostream>
 
@@ -33,7 +36,11 @@ int main(int argc, char* argv[])
 
   // Create simulation components
   TraceLogger logger { config };
-  CPU cpu { config, logger };
+  SwapSubject swapSubject {};
+  DC dc { config, swapSubject };
+  PT pt { config, swapSubject };
+  TLB tlb { config, pt, swapSubject };
+  CPU cpu { config, logger, tlb, pt, dc };
 
   // Run simulation and output results
   cpu.Run(trace);

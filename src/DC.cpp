@@ -1,53 +1,52 @@
-#include "TLB.h"
-#include "ITranslationBuffer.h"
+#include "DC.h"
+#include "IDataCache.h"
 #include "TraceConfig.h"
-#include "IPageTable.h"
 #include "SwapSubject.h"
 
 #include <functional>
 
-TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
-  : Config { config }, PT { pt }
+DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
+  : Config { config }
 {
   // Subscribe to swap events
   swapSubject.Subscribe(GetSwapHandler());
 
   // TODO
-  // Any additional intialization
+  // Any additional initialization
 }
 
-std::function<void(SwapEvent)> TLB::GetSwapHandler()
+std::function<void(SwapEvent)> DC::GetSwapHandler()
 {
   return [&](SwapEvent swapEvent) {
     // TODO
     // Gets called when a swap happens in the PT
     // Has access to all properties of this object
     // Do here whatever you need to do if a page got
-    // evicted from main memory that the TLB was caching
+    // eviceted from main memory that the DC was caching
     // You can see what page got evicted in the swapEvent
   };
 }
 
-TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
+DCReturnType DC::GetBlock(int physicalAddress)
 {
   // TODO
-  TLBReturnType returnType;
+  DCReturnType returnType;
   return returnType;
 }
 
-int TLB::GetHits()
+int DC::GetHits()
 {
   // TODO
   return 0;
 }
 
-int TLB::GetMisses()
+int DC::GetMisses()
 {
   // TODO
   return 0;
 }
 
-int TLB::GetPageTableReferences()
+int DC::GetMainMemoryReferences()
 {
   // TODO
   return 0;
