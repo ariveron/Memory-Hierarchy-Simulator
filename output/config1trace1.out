@@ -17,33 +17,33 @@ Number of bits used for the offset is 4.
 The addresses read in are virtual addresses.
 The translation lookaside buffer is enabled.
 
-Virtual Virt. Page TLB PT Phys DC DC
-Address Page # Off. Res. Res. Pg # DC Tag Idx Res.
+Virtual  Virt.  Page TLB  PT   Phys        DC  DC
+Address  Page # Off. Res. Res. Pg # DC Tag Idx Res.
 -------- ------ ---- ---- ---- ---- ------ --- ----
-00000c84 c 84 miss miss 0 2 0 miss
-0000081c 8 1c miss miss 1 4 1 miss
-0000014c 1 4c miss miss 2 9 0 miss
-00000c84 c 84 miss hit 0 2 0 miss
-00000400 4 0 miss miss 3 c 0 miss
-00000148 1 48 miss hit 2 9 0 miss
-00000144 1 44 hit 2 9 0 hit
-00000c80 c 80 miss hit 0 2 0 miss
-00000008 0 8 miss miss 1 4 0 miss
+00000c84      c   84 miss miss    0      2   0 miss
+0000081c      8   1c miss miss    1      4   1 miss
+0000014c      1   4c miss miss    2      9   0 miss
+00000c84      c   84 miss hit     0      2   0 miss
+00000400      4    0 miss miss    3      c   0 miss
+00000148      1   48 miss hit     2      9   0 miss
+00000144      1   44 hit          2      9   0 hit
+00000c80      c   80 miss hit     0      2   0 miss
+00000008      0    8 miss miss    1      4   0 miss
 
 Simulation Statistics
 ---------------------
-Data TLB hits: 1
-Data TLB misses: 8
-Data TLB hit ratio: 0.111111
-Page table hits: 3
-Page table faults: 5
-Page table hit ratio: 0.375000
-Data cache hits: 1
-DC misses: 8
-DC hit ratio: 0.111111
-Total reads: 9
-Total writes: 0
-Ratio of reads: 1.000000
-Main memory references: 5
-Page table references: 8
-Disk references: 5
+Data TLB hits:            1
+Data TLB misses:          8
+Data TLB hit ratio:       0.111111
+Page table hits:          3
+Page table faults:        5
+Page table hit ratio:     0.375000
+Data cache hits:          1
+DC misses:                8
+DC hit ratio:             0.111111
+Total reads:              9
+Total writes:             0
+Ratio of reads:           1.000000
+Main memory references:   5
+Page table references:    8
+Disk references:          5

@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 #include "TraceConfig.h"
+#include "Trace.h"
 
 #include <iostream>
 
@@ -51,10 +52,13 @@ int main(int argc, char* argv[])
   // Output table header
   std::cout <<
     "Output Table Header\n"
-    "\n"
     << std::flush;
 
   // Run simulation and output results
+  Trace trace { commandParser.GetCommand("t") };
+  while (!trace.IsDone()) 
+    std::cout << "Write=" << trace.Peek().IsWrite << " Address=" << trace.Next().Address << std::endl;
+  std::cout << std::endl;
   
   // Statistics table header
   std::cout <<
