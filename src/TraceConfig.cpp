@@ -119,7 +119,7 @@ TraceConfig::TraceConfig(const std::string& configFileName)
   {
     throw std::invalid_argument("Invalid Data Cache set size");
   }
-  if (DataCacheLineSize <= DataCacheMinLineSize
+  if (DataCacheLineSize < DataCacheMinLineSize
       || (DataCacheLineSize & (DataCacheLineSize - 1)))
   {
     throw std::invalid_argument("Invalid Data Cache line size");
