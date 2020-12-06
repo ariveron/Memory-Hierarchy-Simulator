@@ -16,7 +16,6 @@ CPU::CPU(const TraceConfig& config, const TraceLogger& logger,
 
 void CPU::Run(Trace& trace)
 {
-  // TODO
   Config.PrintConfiguration();
 
   Logger.PrintLogHeader();
@@ -24,6 +23,12 @@ void CPU::Run(Trace& trace)
   while (!trace.IsDone())
   {
     auto entry = trace.Next();
+
+    if (entry.IsWrite) TotalWrites++;
+    else TotalReads++;
+
+    
+
     Logger.PrintLog(entry.Address, entry.Address, true, true, true); 
   }
 

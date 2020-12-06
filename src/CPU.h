@@ -11,9 +11,6 @@
 class CPU
 {
 public:
-  int TotalReads;
-  int TotalWrites;
-
   CPU(const TraceConfig& config, const TraceLogger& logger,
       ITranslationBuffer& tlb, IPageTable& pt, IDataCache& dc);
   void Run(Trace& trace);
@@ -25,6 +22,8 @@ private:
   ITranslationBuffer& TLB;
   IPageTable& PT;
   IDataCache& DC;
+  int TotalReads;
+  int TotalWrites;
 };
 
 #endif
