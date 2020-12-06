@@ -1,6 +1,7 @@
 #include "CommandParser.h"
 #include "TraceConfig.h"
 #include "Trace.h"
+#include "TraceLogger.h"
 
 #include <iostream>
 
@@ -50,14 +51,16 @@ int main(int argc, char* argv[])
     << std::flush;
 
   // Output table header
-  std::cout <<
-    "Output Table Header\n"
-    << std::flush;
-
+  TraceLogger logger { config };
+  logger.PrintLogHeader();
+  
   // Run simulation and output results
   Trace trace { commandParser.GetCommand("t") };
   while (!trace.IsDone()) 
-    std::cout << "Write=" << trace.Peek().IsWrite << " Address=" << trace.Next().Address << std::endl;
+  {
+    auto entry = trace.Next();
+    logger.PrintLog(entry.Address, entry.Address, true, true, true);
+  }
   std::cout << std::endl;
   
   // Statistics table header
