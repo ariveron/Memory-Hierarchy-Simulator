@@ -7,7 +7,7 @@ TraceLogger::TraceLogger(const TraceConfig& config)
   : Config { config }
 {}
 
-void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit)
+void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const
 {
   // TODO
   std::cout 
@@ -16,8 +16,14 @@ void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHi
     << std::endl;
 }
 
-void TraceLogger::PrintLogHeader()
+void TraceLogger::PrintLogHeader() const
 {
   // TODO
   std::cout << "Log Header" << std::endl;
+}
+
+void TraceLogger::PrintLogFooter() const
+{
+  // TODO
+  std::cout << std::endl;
 }
