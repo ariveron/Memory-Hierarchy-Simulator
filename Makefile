@@ -6,9 +6,9 @@ setup:
 clean:
 	rm -r -f bin/* int/*
 rebuild: clean all
-run: bin/memory-hierarchy-simulator
+run: all
 	./bin/memory-hierarchy-simulator $(ARGS)
-test1: bin/memory-hierarchy-simulator
+test1: all
 	./bin/memory-hierarchy-simulator --c config/trace1.config --t trace/trace1.dat
 
 # Link intermediates into executable file
