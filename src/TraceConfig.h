@@ -32,6 +32,7 @@ public:
   int BitsDataCacheOffset;
 
   TraceConfig(const std::string& configFileName);
+  void PrintConfiguration() const;
 
 private:
   const static std::string HeaderDataTLBConfiguration;

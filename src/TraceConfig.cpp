@@ -6,6 +6,7 @@
 #include <exception>
 #include <map>
 #include <cmath>
+#include <iostream>
 
 const int TraceConfig::TLBMaxEntries = 256;
 const int TraceConfig::DataCacheMaxSets = 1024;
@@ -119,7 +120,7 @@ TraceConfig::TraceConfig(const std::string& configFileName)
   {
     throw std::invalid_argument("Invalid Data Cache set size");
   }
-  if (DataCacheLineSize <= DataCacheMinLineSize
+  if (DataCacheLineSize < DataCacheMinLineSize
       || (DataCacheLineSize & (DataCacheLineSize - 1)))
   {
     throw std::invalid_argument("Invalid Data Cache line size");
@@ -162,4 +163,31 @@ std::string TraceConfig::GetFieldVal(const std::string& line)
     throw std::runtime_error("Unable to get trace.config file field value");
   }
   return tolower_copy(trim_copy(line.substr(valStartPosition)));
+}
+
+void TraceConfig::PrintConfiguration() const
+{
+  std::cout <<
+    "Number of virtual pages is " << PageTableVirtualPages << ".\n"
+    "Number of physical pages is " << PageTablePhysicalPages << ".\n"
+    "Each page contains " << PageTablePageSize << " bytes.\n"
+    "Number of bits used for the page table index is " << BitsPageTableIndex << ".\n"
+    "Number of bits used for the page offset is " << BitsPageTableOffset << ".\n"
+    "\n"
+    "Data TLB contains " << TLBEntries << " entries.\n"
+    "\n"
+    "Data cache contains " << DataCacheSets << " sets.\n"
+    "Each set contains " << DataCacheSetSize << " entries.\n"
+    "Each line is " << DataCacheLineSize << " bytes.\n"
+    "The cache " 
+      << (DataCacheWriteThrough ? "does not use" : "uses")
+      << " a write-allocate and write-back policy.\n"
+    "Number of bits used for the tags is " << BitsDataCacheTag << ".\n"
+    "Number of bits used for the index is " << BitsDataCacheIndex << ".\n"
+    "Number of bits used for the offset is " << BitsDataCacheOffset << ".\n"
+    "\n"
+    "The addresses read in are " << (UseVirtualAddreses ? "" : "not ") << "virtual addresses.\n"
+    "The translation lookaside buffer is " << (UseTLB ? "enabled" : "disabled") << ".\n"
+    "\n"
+    << std::flush;
 }
