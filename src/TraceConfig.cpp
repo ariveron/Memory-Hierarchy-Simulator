@@ -5,6 +5,14 @@
 #include <fstream>
 #include <exception>
 #include <map>
+#include <cmath>
+
+const int TraceConfig::TLBMaxEntries = 256;
+const int TraceConfig::DataCacheMaxSets = 1024;
+const int TraceConfig::DataCacheMaxSetSize = 8;
+const int TraceConfig::DataCacheMinLineSize = 8;
+const int TraceConfig::PageTableMaxVirtualPages = 8192;
+const int TraceConfig::PageTableMaxPhysicalPages = 1024;
 
 const std::string TraceConfig::HeaderDataTLBConfiguration = "data tlb configuration";
 const std::string TraceConfig::HeaderPageTableConfiguration = "page table configuration";
@@ -63,7 +71,7 @@ TraceConfig::TraceConfig(const std::string& configFileName)
     PageTableVirtualPages = std::stoi(configMap[HeaderPageTableConfiguration][FieldNumberOfVirtualPages]);
     PageTablePhysicalPages = std::stoi(configMap[HeaderPageTableConfiguration][FieldNumberOfPhysicalPages]);
     PageTablePageSize = std::stoi(configMap[HeaderPageTableConfiguration][FieldPageSize]);
-    DataCacheEntries = std::stoi(configMap[HeaderDataCacheConfiguration][FieldNumberOfEntries]);
+    DataCacheSets = std::stoi(configMap[HeaderDataCacheConfiguration][FieldNumberOfEntries]);
     DataCacheSetSize = std::stoi(configMap[HeaderDataCacheConfiguration][FieldSetSize]);
     DataCacheLineSize = std::stoi(configMap[HeaderDataCacheConfiguration][FieldLineSize]);
     DataCacheWriteThrough = configMap[HeaderDataCacheConfiguration][FieldWriteThrough] == FieldValueTrue; 
@@ -74,6 +82,56 @@ TraceConfig::TraceConfig(const std::string& configFileName)
   {
     throw std::runtime_error("Unable to parse the trace.config file");
   }
+
+  // Validate properties parsed from trace config
+  if (TLBEntries <= 0
+      || (TLBEntries & (TLBEntries - 1))
+      || TLBEntries > TLBMaxEntries)
+  {
+    throw std::invalid_argument("Invalid number of TLB entries specified");
+  }
+  if (PageTableVirtualPages <= 0
+      || (PageTableVirtualPages & (PageTableVirtualPages - 1))
+      || PageTableVirtualPages > PageTableMaxVirtualPages)
+  {
+    throw std::invalid_argument("Invalid number of Page Table virtual pages specified");
+  }
+  if (PageTablePhysicalPages <= 0
+      || (PageTablePhysicalPages & (PageTablePhysicalPages - 1))
+      || PageTablePhysicalPages > PageTableMaxPhysicalPages)
+  {
+    throw std::invalid_argument("Invalid number of Page Table physical pages specified");
+  }
+  if (PageTablePageSize <= 0
+      || (PageTablePageSize & (PageTablePageSize - 1)))
+  {
+    throw std::invalid_argument("Invalid Page Table page size");
+  }
+  if (DataCacheSets <= 0
+      || (DataCacheSets & (DataCacheSets - 1))
+      || DataCacheSets > DataCacheMaxSets)
+  {
+    throw std::invalid_argument("Invalid number of Data Cache sets");
+  }
+  if (DataCacheSetSize <= 0
+      || (DataCacheSetSize & (DataCacheSetSize - 1))
+      || DataCacheSetSize > DataCacheMaxSetSize)
+  {
+    throw std::invalid_argument("Invalid Data Cache set size");
+  }
+  if (DataCacheLineSize <= DataCacheMinLineSize
+      || (DataCacheLineSize & (DataCacheLineSize - 1)))
+  {
+    throw std::invalid_argument("Invalid Data Cache line size");
+  }
+
+  // Calculate the remaining trace config properties
+  MainMemorySize = PageTablePhysicalPages * PageTablePageSize;
+  BitsPageTableOffset = std::log2(PageTablePageSize);
+  BitsPageTableIndex = std::log2(PageTableVirtualPages * PageTablePageSize) - BitsPageTableOffset;
+  BitsDataCacheOffset = std::log2(DataCacheLineSize);
+  BitsDataCacheIndex = std::log2(DataCacheSets * DataCacheSetSize);
+  BitsDataCacheTag = std::log2(MainMemorySize) - BitsDataCacheIndex - BitsDataCacheOffset;
 }
 
 bool TraceConfig::IsAField(const std::string& line)

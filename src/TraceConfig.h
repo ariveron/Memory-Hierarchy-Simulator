@@ -6,19 +6,30 @@
 class TraceConfig
 {
 public:
-  int TLBEntries;
+  const static int TLBMaxEntries;
+  const static int PageTableMaxVirtualPages;
+  const static int PageTableMaxPhysicalPages;
+  const static int DataCacheMaxSets;
+  const static int DataCacheMaxSetSize;
+  const static int DataCacheMinLineSize;
 
+  int TLBEntries;
   int PageTableVirtualPages;
   int PageTablePhysicalPages;
   int PageTablePageSize;
-
-  int DataCacheEntries;
+  int DataCacheSets;
   int DataCacheSetSize;
   int DataCacheLineSize;
   bool DataCacheWriteThrough;
-  
   bool UseVirtualAddreses;
   bool UseTLB;
+
+  int MainMemorySize;
+  int BitsPageTableOffset;
+  int BitsPageTableIndex;
+  int BitsDataCacheTag;
+  int BitsDataCacheIndex;
+  int BitsDataCacheOffset;
 
   TraceConfig(const std::string& configFileName);
 

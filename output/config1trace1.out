@@ -3,7 +3,9 @@ Number of physical pages is 4.
 Each page contains 256 bytes.
 Number of bits used for the page table index is 6.
 Number of bits used for the page offset is 8.
+
 Data TLB contains 2 entries.
+
 Data cache contains 4 sets.
 Each set contains 1 entries.
 Each line is 16 bytes.
@@ -11,8 +13,10 @@ The cache uses a write-allocate and write-back policy.
 Number of bits used for the tag is 4.
 Number of bits used for the index is 2.
 Number of bits used for the offset is 4.
+
 The addresses read in are virtual addresses.
 The translation lookaside buffer is enabled.
+
 Virtual Virt. Page TLB PT Phys DC DC
 Address Page # Off. Res. Res. Pg # DC Tag Idx Res.
 -------- ------ ---- ---- ---- ---- ------ --- ----
@@ -25,6 +29,7 @@ Address Page # Off. Res. Res. Pg # DC Tag Idx Res.
 00000144 1 44 hit 2 9 0 hit
 00000c80 c 80 miss hit 0 2 0 miss
 00000008 0 8 miss miss 1 4 0 miss
+
 Simulation Statistics
 ---------------------
 Data TLB hits: 1
