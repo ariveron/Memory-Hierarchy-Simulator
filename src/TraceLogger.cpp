@@ -27,6 +27,5 @@ void TraceLogger::PrintLogHeader() const
 
 void TraceLogger::PrintLogFooter() const
 {
-  // TODO
   std::cout << std::endl;
 }
