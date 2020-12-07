@@ -6,9 +6,9 @@
 #include <iostream>
 
 PT::PT(const TraceConfig& config, SwapSubject& swapSubject)
-	: Config{ config }, Swap{ swapSubject }
+	: Config{ config }, Swap{ swapSubject }, Hits{ 0 }, DiskReference{ 0 }
 {
-	pageTable.reserve(Config.PageTablePhysicalPages);
+	auto pageTable = std::vector<PTE>(Config.PageTablePhysicalPages);
 }
 
 PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
@@ -21,9 +21,9 @@ PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 	entry.offset = virtualAddress & ((2 << (Config.BitsPageTableOffset - 1)) - 1);
 	entry.time = std::chrono::system_clock::now().time_since_epoch().count();
 	
-	if (pageTable.size() == 0) 
+	if (pageTable.empty()) 
 	{
-		diskReference++;
+		DiskReference++;
 		pageTable.push_back(entry);
 		returnType.PTHit = false;
 		returnType.PhysicalAddress = entry.offset;
@@ -43,7 +43,7 @@ PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 	}
 	else
 	{
-		diskReference++;
+		DiskReference++;
 		returnType = evictPage(entry);
 		return returnType;
 	}
@@ -56,7 +56,7 @@ PTReturnType PT::checkPT(PTE entry)
 	{
 		if (pageTable[i].virtualPage == entry.virtualPage)
 		{   
-			hits++;
+			Hits++;
 			returnType.PTHit = true;
 			returnType.PhysicalAddress = ((i * Config.PageTablePageSize) << Config.BitsPageTableOffset) + entry.offset;
 			pageTable[i].time = std::chrono::system_clock::now().time_since_epoch().count();
@@ -71,8 +71,8 @@ PTReturnType PT::checkPT(PTE entry)
 PTReturnType PT::evictPage(PTE entry) 
 {
 	PTReturnType returnType;
-	int replace;
-	double current = pageTable[0].time;
+	auto replace = 0;
+	auto current = std::numeric_limits<double>::max();
 	for (int i = 1; i < Config.PageTablePhysicalPages; i++)
 	{
 		if (pageTable[i].time < current)
@@ -82,14 +82,13 @@ PTReturnType PT::evictPage(PTE entry)
 		}
 	}
 	
+	// Check for a write
+	if (pageTable[replace].dirty)
+		DiskReference++;
+	pageTable.assign(replace, entry);
+	
 	returnType.PTHit = false;
 	returnType.PhysicalAddress = ((replace * Config.PageTablePageSize) << Config.BitsPageTableOffset) + entry.offset;
-
-	// Publish eviction for swap handler
-	publishEvent(returnType.PhysicalAddress, pageTable[replace].virtualAddress);
-	
-	// entry placed at index
-	pageTable.assign(replace, entry);
 	return returnType;
 }
 
@@ -103,15 +102,15 @@ void PT::publishEvent(int physicalAddress, int virtualAddress)
 
 int PT::GetHits()
 {
-	return hits;
+	return Hits;
 }
 
 int PT::GetFaults()
 {
-	return faults;
+	return Faults;
 }
 
 int PT::GetDiskReferences()
 {
-	return diskReference;
+	return DiskReference;
 }

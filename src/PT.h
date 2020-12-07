@@ -11,6 +11,7 @@ class PT : public IPageTable
 public:
 	struct PTE 
 	{
+		bool valid;
 		bool dirty;
 		int virtualAddress;
 		int virtualPage;
@@ -27,9 +28,9 @@ public:
 	int GetDiskReferences() override;
 
 private:
-	int diskReference;
-	int hits;
-	int faults;
+	int DiskReference;
+	int Hits;
+	int Faults;
 	const TraceConfig& Config;
 	SwapSubject& Swap;
 	PTReturnType checkPT(PTE entry);
