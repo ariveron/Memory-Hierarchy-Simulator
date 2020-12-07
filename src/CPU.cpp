@@ -61,7 +61,7 @@ void CPU::Run(Trace& trace)
     }
     
     // Get info from DC about memory access
-    bool isDCHit = DC.GetBlock(physicalAddress).DCHit;
+    bool isDCHit = DC.GetBlock(physicalAddress, entry.IsWrite).DCHit;
 
     // Log output of processing this trace entry
     Logger.PrintLog(entry.Address, physicalAddress, isTLBHit, isPTHit, isDCHit); 

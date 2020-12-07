@@ -1,5 +1,5 @@
 # Commands not associated with a file
-.PHONY: all setup clean rebuild run test1
+.PHONY: all setup clean rebuild run test1 test3
 all: setup bin/memory-hierarchy-simulator
 setup:
 	./setup.sh
@@ -10,6 +10,8 @@ run: all
 	./bin/memory-hierarchy-simulator $(ARGS)
 test1: all
 	./bin/memory-hierarchy-simulator --c config/trace1.config --t trace/trace1.dat
+test3: all
+	./bin/memory-hierarchy-simulator --c config/trace3.config --t trace/trace1.dat
 
 # Link intermediates into executable file
 bin/memory-hierarchy-simulator: int/main.o int/CommandParser.o int/TraceConfig.o int/Trace.o int/TraceLogger.o int/SwapSubject.o int/CPU.o int/TLB.o int/PT.o int/DC.o
