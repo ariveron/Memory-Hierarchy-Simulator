@@ -6,6 +6,15 @@
 #include "SwapSubject.h"
 
 #include <functional>
+#include <vector>
+#include <chrono>
+
+struct Line
+{
+  bool IsEmpty;
+  int Tag;
+  double LastAccessTime;
+};
 
 class DC: public IDataCache
 {
@@ -20,11 +29,18 @@ public:
 
 private:
   const TraceConfig& Config;
+  std::vector<std::vector<Line>> Cache; 
+
+  int TotalHits;
+  int TotalMisses;
+  int MainMemoryReferences;
+
+  Line& GetLine(int physicalAddress);
+  bool IsInCache(int physicalAddress);
+  int GetTag(int physicalAddress);
+  int GetIndex(int physicalAddress);
 
   std::function<void(SwapEvent)> GetSwapHandler();
-
-  // TODO
-  // Any additional properties and methods
 };
 
 #endif
