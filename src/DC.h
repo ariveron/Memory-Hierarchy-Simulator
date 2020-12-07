@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <vector>
-#include <chrono>
 
 struct Line
 {
@@ -36,7 +35,7 @@ private:
   int TotalMisses;
   int MainMemoryReferences;
 
-  void LoadLineFromMainMemory(int physicalAddress, bool isWrite);
+  void LoadLineFromMainMemory(int physicalAddress);
   void EvictOldestLineFromSet(int physicalAddress);
   bool IsSetFull(int physicalAddress);
   void AccessCacheLine(int physicalAddress, bool isWrite);
@@ -49,6 +48,11 @@ private:
   int GetIndex(int physicalAddress);
 
   std::function<void(SwapEvent)> GetSwapHandler();
+
+  // For debuging
+  void PrintCache(const char* msg = "");
+  void PrintSet(int index, const char* msg = "");
+  void PrintTagAndIndex(int tag, int index, const char* msg = "");
 };
 
 #endif

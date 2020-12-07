@@ -6,6 +6,9 @@
 #include <functional>
 #include <vector>
 #include <chrono>
+#include <limits>
+
+#include <iostream>
 
 DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
   : Config { config }, TotalHits { 0 }, TotalMisses { 0 }, MainMemoryReferences { 0 }
@@ -16,6 +19,9 @@ DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
   // Fill an empty set with empty Lines
   Line emptyLine {};
   emptyLine.IsValid = false;
+  emptyLine.IsDirty = false;
+  emptyLine.Tag = -1;
+  emptyLine.LastAccessTime = 0;
   // A set contains a set number of lines
   auto emptySet = std::vector<Line> { static_cast<size_t>(Config.DataCacheSetSize), emptyLine };
   // The cache is initialized with the specified number of empty sets
@@ -41,32 +47,81 @@ DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
   {
     // Update internal count
     TotalHits++;
-    // Process the data query
-    AccessCacheLine(physicalAddress, isWrite);
   }
   else
   {
+    // Update internal count
     TotalMisses++;
-
-    if (IsSetFull(physicalAddress))
-    {
-      EvictLineFromCache(physicalAddress);
-    }
-
-    LoadLineFromMainMemory(physicalAddress, isWrite);
+    // Load line from main memory into the data cache
+    LoadLineFromMainMemory(physicalAddress);
   }
+
+  // Process the data query
+  AccessCacheLine(physicalAddress, isWrite);
 
   return DCReturnType { isCacheHit };
 }
 
-void DC::LoadLineFromMainMemory(int physicalAddress, bool isWrite)
+void DC::LoadLineFromMainMemory(int physicalAddress)
 {
-  // TODO remember to updatae MainMemoryReferences and LastAccessTime
+  // One memory reference to read from memory into cache
+  MainMemoryReferences++;
+
+  // Evict oldest line from set if set is full
+  if (IsSetFull(physicalAddress))
+  {
+    EvictOldestLineFromSet(physicalAddress);
+  }
+
+  // Get index to find set 
+  auto index = GetIndex(physicalAddress);
+
+  // Find an available entry within the data cache to add line
+  auto newLineAdded = false;
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (!line.IsValid && !newLineAdded)
+        {
+          // Set the new line read in from memory
+          line.IsValid = true;
+          line.IsDirty = false;
+          line.Tag = GetTag(physicalAddress);
+          std::chrono::system_clock::now().time_since_epoch().count();
+
+          newLineAdded = true;
+        }
+      });
 }
 
 void DC::EvictOldestLineFromSet(int physicalAddress)
 {
-  // TODO remember to write back to main memory and update MainMemoryReferences if valid and dirty
+  // Get the index for findin the sest
+  auto index = GetIndex(physicalAddress);
+
+  // Kep track of oldest line in set
+  auto oldestLineLastAccessTime = std::numeric_limits<double>::max(); 
+  auto oldestLineTag = -1;
+
+  // Find the oldest line tag
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (line.LastAccessTime < oldestLineLastAccessTime)
+        {
+          oldestLineTag = line.Tag;
+          oldestLineLastAccessTime = line.LastAccessTime;
+        }
+      });
+  
+  // Write oldest line back to main memory if dirty and invalidate
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (line.IsValid && line.Tag == oldestLineTag) 
+        {
+          if (line.IsDirty)
+          {
+            MainMemoryReferences++;
+          }
+
+          line.IsValid = false;
+        }
+      });
 }
 
 bool DC::IsSetFull(int physicalAddress)
@@ -147,7 +202,7 @@ bool DC::IsLineInCache(int physicalAddress)
 void DC::ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda)
 {
   // Get the set that corresponds with the index
-  auto indexedSet = Cache.at(index);
+  auto& indexedSet = Cache.at(index);
 
   // Loop through each line in the set and apply the lambda
   for (auto line = indexedSet.begin(); line < indexedSet.end(); line++)
@@ -186,4 +241,27 @@ int DC::GetMisses()
 int DC::GetMainMemoryReferences()
 {
   return MainMemoryReferences;
+}
+
+void DC::PrintCache(const char* msg)
+{
+  for (size_t i = 0; i < Cache.size(); i++)
+  {
+    PrintSet(i);
+  }
+}
+
+void DC::PrintSet(int index, const char* msg)
+{
+  auto& cacheSet = Cache.at(index);
+
+  for (auto line = cacheSet.begin(); line != cacheSet.end(); line++)
+  {
+    PrintTagAndIndex(line->Tag, index);
+  }
+}
+
+void DC::PrintTagAndIndex(int tag, int index, const char* msg)
+{
+  std::cout << msg << "tag=" << tag << " index=" << index << std::endl;
 }
