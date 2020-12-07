@@ -131,7 +131,7 @@ TraceConfig::TraceConfig(const std::string& configFileName)
   BitsPageTableOffset = std::log2(PageTablePageSize);
   BitsPageTableIndex = std::log2(PageTableVirtualPages * PageTablePageSize) - BitsPageTableOffset;
   BitsDataCacheOffset = std::log2(DataCacheLineSize);
-  BitsDataCacheIndex = std::log2(DataCacheSets * DataCacheSetSize);
+  BitsDataCacheIndex = std::log2(DataCacheSets);
   BitsDataCacheTag = std::log2(MainMemorySize) - BitsDataCacheIndex - BitsDataCacheOffset;
 }
 
