@@ -36,6 +36,9 @@ private:
   int TotalMisses;
   int MainMemoryReferences;
 
+  void LoadLineFromMainMemory(int physicalAddress, bool isWrite);
+  void EvictOldestLineFromSet(int physicalAddress);
+  bool IsSetFull(int physicalAddress);
   void AccessCacheLine(int physicalAddress, bool isWrite);
   void EvictLineFromCache(int physicalAddress);
   bool IsLineInCache(int physicalAddress);

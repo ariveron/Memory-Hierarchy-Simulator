@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <vector>
+#include <chrono>
 
 DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
   : Config { config }, TotalHits { 0 }, TotalMisses { 0 }, MainMemoryReferences { 0 }
@@ -15,8 +16,6 @@ DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
   // Fill an empty set with empty Lines
   Line emptyLine {};
   emptyLine.IsValid = false;
-  emptyLine.Tag = -1;
-  emptyLine.LastAccessTime = 0;
   // A set contains a set number of lines
   auto emptySet = std::vector<Line> { static_cast<size_t>(Config.DataCacheSetSize), emptyLine };
   // The cache is initialized with the specified number of empty sets
@@ -48,23 +47,67 @@ DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
   else
   {
     TotalMisses++;
-    MainMemoryReferences++;
 
-    // TODO
-    // Place line in an empty line in the set TODO - AddLineToSet(int physicalAddress) can use methods below
-    // TODO - bool SetContainsEmptyLine(int physicalAddress);
-    // Evict a line if needed from the set TODO - EvictOldestLineFromSet(int physicalAddress)
-    // Remember to update last access time to now
+    if (IsSetFull(physicalAddress))
+    {
+      EvictLineFromCache(physicalAddress);
+    }
+
+    LoadLineFromMainMemory(physicalAddress, isWrite);
   }
 
   return DCReturnType { isCacheHit };
 }
 
+void DC::LoadLineFromMainMemory(int physicalAddress, bool isWrite)
+{
+  // TODO remember to updatae MainMemoryReferences and LastAccessTime
+}
+
+void DC::EvictOldestLineFromSet(int physicalAddress)
+{
+  // TODO remember to write back to main memory and update MainMemoryReferences if valid and dirty
+}
+
+bool DC::IsSetFull(int physicalAddress)
+{
+  bool isSetfull = true;
+
+  // Get index and tag for identifying cache line
+  auto index = GetIndex(physicalAddress);
+
+  // If at least one line is not valid then set is not full
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (!line.IsValid) isSetfull = false;
+      });
+
+  return isSetfull;
+}
+
 void DC::AccessCacheLine(int physicalAddress, bool isWrite)
 {
-  auto currentTime = std::chrono::system_clock::now().time_since_epoch().count();
+  // Get index and tag for identifying cache line
+  auto index = GetIndex(physicalAddress);
+  auto tag = GetTag(physicalAddress);
 
-  // TODO
+  // Update cache line and apply write policy if writing
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (line.Tag == tag)
+        {
+          double currentTime = std::chrono::system_clock::now().time_since_epoch().count();
+          line.LastAccessTime = currentTime;
+
+          if (isWrite && Config.DataCacheWriteThrough)
+          {
+            MainMemoryReferences++;
+            line.IsDirty = false;
+          }
+          else if (isWrite)
+          {
+            line.IsDirty = true;
+          }
+        }
+      });
 }
 
 void DC::EvictLineFromCache(int physicalAddress)
@@ -74,8 +117,14 @@ void DC::EvictLineFromCache(int physicalAddress)
   auto tag = GetTag(physicalAddress);
 
   // Invalidate the cache line if it matches the tag within the set
-  ForEachCacheLineInSet(index, [tag](Line& line) {
-        if (line.Tag == tag) line.IsValid = false;
+  // and write to main memory if dirty
+  ForEachCacheLineInSet(index, [&](Line& line) {
+        if (line.Tag == tag) 
+        {
+          if (line.IsDirty) MainMemoryReferences++; 
+
+          line.IsValid = false;
+        }
       });
 }
 
