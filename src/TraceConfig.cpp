@@ -168,6 +168,7 @@ std::string TraceConfig::GetFieldVal(const std::string& line)
 void TraceConfig::PrintConfiguration() const
 {
   std::cout <<
+    "\n"
     "Number of virtual pages is " << PageTableVirtualPages << ".\n"
     "Number of physical pages is " << PageTablePhysicalPages << ".\n"
     "Each page contains " << PageTablePageSize << " bytes.\n"

@@ -35,15 +35,19 @@ Simulation Statistics
 Data TLB hits:            1
 Data TLB misses:          8
 Data TLB hit ratio:       0.111111
+
 Page table hits:          3
 Page table faults:        5
 Page table hit ratio:     0.375000
+
 Data cache hits:          1
 DC misses:                8
 DC hit ratio:             0.111111
+
 Total reads:              9
 Total writes:             0
 Ratio of reads:           1.000000
+
 Main memory references:   5
 Page table references:    8
 Disk references:          5
