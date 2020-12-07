@@ -23,7 +23,7 @@ void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHi
     << std::setw(6) << std::hex << virtualPageNumber << std::setw(1) << " "
     << std::setw(4) << std::hex << pageOffset << std::setw(1) << " "
     << std::setw(4) << (isTLBHit ? "hit" : "miss") << std::setw(1) << " "
-    << std::setw(4) << (isPTHit ? "hit" : "miss") << std::setw(1) << " "
+    << std::setw(4) << (isTLBHit ? "" : (isPTHit ? "hit" : "miss")) << std::setw(1) << " "
     << std::setw(4) << std::hex << physicalPageNumber << std::setw(1) << " "
     << std::setw(6) << std::hex << dataCacheTag << std::setw(1) << " "
     << std::setw(3) << std::hex << dataCacheIndex << std::setw(1) << " "
