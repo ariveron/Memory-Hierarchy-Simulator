@@ -11,7 +11,7 @@ public:
   PT(const TraceConfig& config, SwapSubject& swapSubject);
 
   // Methods from interface
-  PTReturnType GetPhysicalAddress(int virtualAddress) override;
+  PTReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
   int GetHits() override;
   int GetFaults() override;
   int GetDiskReferences() override;

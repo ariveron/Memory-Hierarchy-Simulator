@@ -10,7 +10,7 @@ PT::PT(const TraceConfig& config, SwapSubject& swapSubject)
   // Any additional initialization
 }
 
-PTReturnType PT::GetPhysicalAddress(int virtualAddress)
+PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 {
   // TODO
   PTReturnType returnType;
