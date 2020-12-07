@@ -11,7 +11,8 @@
 
 struct Line
 {
-  bool IsEmpty;
+  bool IsValid;
+  bool IsDirty;
   int Tag;
   double LastAccessTime;
 };
@@ -35,8 +36,12 @@ private:
   int TotalMisses;
   int MainMemoryReferences;
 
-  Line& GetLine(int physicalAddress);
-  bool IsInCache(int physicalAddress);
+  void AccessCacheLine(int physicalAddress, bool isWrite);
+  void EvictLineFromCache(int physicalAddress);
+  bool IsLineInCache(int physicalAddress);
+
+  void ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda);
+
   int GetTag(int physicalAddress);
   int GetIndex(int physicalAddress);
 

@@ -13,7 +13,10 @@ DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
   swapSubject.Subscribe(GetSwapHandler());
 
   // Fill an empty set with empty Lines
-  auto emptyLine = Line { true, -1, 0 };
+  Line emptyLine {};
+  emptyLine.IsValid = false;
+  emptyLine.Tag = -1;
+  emptyLine.LastAccessTime = 0;
   // A set contains a set number of lines
   auto emptySet = std::vector<Line> { static_cast<size_t>(Config.DataCacheSetSize), emptyLine };
   // The cache is initialized with the specified number of empty sets
@@ -23,40 +26,24 @@ DC::DC(const TraceConfig& config, SwapSubject& swapSubject)
 std::function<void(SwapEvent)> DC::GetSwapHandler()
 {
   return [&](SwapEvent swapEvent) {
-    // If PA is not in cache then nothing needs to be done
-    if (!IsInCache(swapEvent.PAEvictedFromMainMemory)) return;
-    
-    // TODO - move to EvictLineFromSet(int physicalAddress) method
-    // If it is in cache we need to remove it
-    auto index = GetIndex(swapEvent.PAEvictedFromMainMemory);
-    auto tag = GetTag(swapEvent.PAEvictedFromMainMemory); 
+    // Nothing to do if line is not present
+    if (!IsLineInCache(swapEvent.PAEvictedFromMainMemory)) return;
 
-    // Get the set that corresponds with the index
-    auto indexedSet = Cache.at(index);
-
-    // Look through each line in the set to find the corresponding line
-    for (auto line = indexedSet.begin(); line < indexedSet.end(); line++)
-    {
-      if (line->Tag == tag) 
-      {
-        // Set it to empty to remove it
-        line->IsEmpty = true;
-      }
-    }
+    // Evict address from cache if present
+    EvictLineFromCache(swapEvent.PAEvictedFromMainMemory); 
   };
 }
 
 DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
 {
-  auto isCacheHit = IsInCache(physicalAddress); 
+  auto isCacheHit = IsLineInCache(physicalAddress); 
 
   if (isCacheHit)
   {
+    // Update internal count
     TotalHits++;
-
-    // TODO - UpdateLineLastAccessTime(int physicalAddress)
-    // TODO - use this ==> double now = std::chrono::system_clock::now().time_since_epoch().count();
-    // Update LastAccessTime to now
+    // Process the data query
+    AccessCacheLine(physicalAddress, isWrite);
   }
   else
   {
@@ -73,23 +60,59 @@ DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
   return DCReturnType { isCacheHit };
 }
 
-bool DC::IsInCache(int physicalAddress)
+void DC::AccessCacheLine(int physicalAddress, bool isWrite)
 {
-  // Calculate the index and tag, offset is not needed for simulation
+  auto currentTime = std::chrono::system_clock::now().time_since_epoch().count();
+
+  // TODO
+}
+
+void DC::EvictLineFromCache(int physicalAddress)
+{
+  // Get index and tag for identifying cache line
+  auto index = GetIndex(physicalAddress);
+  auto tag = GetTag(physicalAddress);
+
+  // Invalidate the cache line if it matches the tag within the set
+  ForEachCacheLineInSet(index, [tag](Line& line) {
+        if (line.Tag == tag) line.IsValid = false;
+      });
+}
+
+bool DC::IsLineInCache(int physicalAddress)
+{
+  auto isFound = false;
+  
+  // Get index and tag for identifying cache line
   auto index = GetIndex(physicalAddress);
   auto tag = GetTag(physicalAddress); 
 
+  // Try to find the tag within the set
+    ForEachCacheLineInSet(index, [&isFound, tag](Line& line) {
+        if (line.IsValid && line.Tag == tag) isFound = true; 
+      });
+  
+  return isFound;
+}
+
+void DC::ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda)
+{
   // Get the set that corresponds with the index
   auto indexedSet = Cache.at(index);
 
-  // Look through each line in the set to see if the tag corresponds, and return true if it does
+  // Loop through each line in the set and apply the lambda
   for (auto line = indexedSet.begin(); line < indexedSet.end(); line++)
   {
-    if (!line->IsEmpty && line->Tag == tag) return true;
+     lambda(*line);
   }
+}
 
-  // If tag wasn't found then it is not present in the cache
-  return false;
+int DC::GetIndex(int physicalAddress)
+{
+  auto idxBits = Config.BitsDataCacheIndex;
+  auto offBits = Config.BitsDataCacheOffset;
+
+  return (physicalAddress & ((2 << (idxBits + offBits - 1)) - 1)) >> (offBits);
 }
 
 int DC::GetTag(int physicalAddress)
@@ -99,14 +122,6 @@ int DC::GetTag(int physicalAddress)
   auto offBits = Config.BitsDataCacheOffset;
 
   return (physicalAddress & ((2 << (tagBits + idxBits + offBits - 1)) - 1)) >> (idxBits + offBits);
-}
-
-int DC::GetIndex(int physicalAddress)
-{
-  auto idxBits = Config.BitsDataCacheIndex;
-  auto offBits = Config.BitsDataCacheOffset;
-
-  return (physicalAddress & ((2 << (idxBits + offBits - 1)) - 1)) >> (offBits);
 }
 
 int DC::GetHits()
