@@ -22,7 +22,7 @@ public:
   DC(const TraceConfig& config, SwapSubject& swapSubject);
 
   // Methods from interface
-  DCReturnType GetBlock(int physicalAddress) override;
+  DCReturnType GetBlock(int physicalAddress, bool isWrite) override;
   int GetHits() override;
   int GetMisses() override;
   int GetMainMemoryReferences() override;
