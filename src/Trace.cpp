@@ -5,6 +5,8 @@
 #include <string>
 #include <exception>
 
+#include <sstream>
+
 Trace::Trace(const std::string& traceFileName)
   : TraceFile{ traceFileName }
 {
@@ -46,11 +48,13 @@ void Trace::GetNextEntry()
     try
     {
       NextEntry.IsWrite = line[0] == 'W';
-      NextEntry.Address = std::stoi(line.substr(2), nullptr, 16);
+      NextEntry.Address = std::stol(line.substr(2), nullptr, 16);
     }
     catch (std::exception& e)
     {
-      throw std::runtime_error("Unable to parse trace entry");
+      std::stringstream ss {};
+      ss << "Unable to parse trace entry " << line;
+      throw std::runtime_error(ss.str());
     }
   }
 }
