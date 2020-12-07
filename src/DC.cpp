@@ -46,7 +46,7 @@ std::function<void(SwapEvent)> DC::GetSwapHandler()
   };
 }
 
-DCReturnType DC::GetBlock(int physicalAddress)
+DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
 {
   auto isCacheHit = IsInCache(physicalAddress); 
 
