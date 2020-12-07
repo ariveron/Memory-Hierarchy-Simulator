@@ -4,24 +4,37 @@
 #include "IPageTable.h"
 #include "TraceConfig.h"
 #include "SwapSubject.h"
-
-class PT: public IPageTable
+#include <vector>
+#include <chrono>
+class PT : public IPageTable
 {
 public:
-  PT(const TraceConfig& config, SwapSubject& swapSubject);
-
-  // Methods from interface
-  PTReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
-  int GetHits() override;
-  int GetFaults() override;
-  int GetDiskReferences() override;
+	struct PTE 
+	{
+		bool dirty;
+		int virtualAddress;
+		int virtualPage;
+		int offset;
+		double time;
+	};
+	std::vector<PTE> pageTable;
+	PT(const TraceConfig& config, SwapSubject& swapSubject);
+	
+	// Methods from interface
+	PTReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
+	int GetHits() override;
+	int GetFaults() override;
+	int GetDiskReferences() override;
 
 private:
-  const TraceConfig& Config;
-  SwapSubject& Swap;
-
-  // TODO
-  // Any additional properties and methods
+	int diskReference;
+	int hits;
+	int faults;
+	const TraceConfig& Config;
+	SwapSubject& Swap;
+	PTReturnType checkPT(PTE entry);
+	PTReturnType evictPage(PTE entry);
+	void publishEvent(int physicalAddress, int virtualAddress);
 };
 
 #endif
