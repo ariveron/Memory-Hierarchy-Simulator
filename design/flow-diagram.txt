@@ -29,6 +29,34 @@
             | t |
              ---
 
+**************
+* Statistics *
+**************
+
+ -----------------
+| CPU             |
+|  - Total Reads  |
+|  - Total Writes |
+ -----------------
+ --------------------------
+| TLB                      |
+|  - Hits                  |
+|  - Misses                |
+|  - Page Table References |
+ --------------------------
+ --------------------
+| PT                 |
+|  - Hits            |
+|  - Faults          |
+|  - Disk References |
+ --------------------
+ ---------------------------
+| DC                        |
+|  - Hits                   |
+|  - Misses                 |
+|  - Main Memory References |
+ ---------------------------
+
 **********************
 * Data Flow Overview *
 **********************
@@ -46,21 +74,21 @@
              -------------
             | TraceLogger |
              -------------
-                       ___
-   -----                |   |
-  | TLB |<- Subcriber --| S |
-   -----                | w |
-   ----                 | a |
-  | PT |- Publisher --->| p |
-   ----                 |   |
-   ----                 | S |
-  | DC |< Subcriber --->| u |
-   ----                 | b |
-                        | j |
-                        | e |
-                        | c |
-                        | t |
-                         ---
+                            ___
+   -----                   |   |
+  | TLB |<-- Subcriber ----| S |
+   -----                   | w |
+   ----                    | a |
+  | PT |---- Publisher --->| p |
+   ----                    |   |
+   ----                    | S |
+  | DC |<--- Subcriber --->| u |
+   ----                    | b |
+                           | j |
+                           | e |
+                           | c |
+                           | t |
+                            ---
 
 ***************************************
 * TLB and Virtual Addresses Data Flow *
