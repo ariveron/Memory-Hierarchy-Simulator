@@ -12,6 +12,7 @@
 int numHits = 0;
 int numMisses = 0;
 int numPTRefs = 0;
+int numValidEntries = 0;
 
 struct tlbVectorEntry
 {
@@ -36,7 +37,7 @@ TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
     emptyEntry.physicalAddress = 0;
     emptyEntry.lastTimeAccessed = 0;
     emptyEntry.isValid = false;
-    tlbVector = std::vector<tlbVectorEntry>(TraceConfig::TLBMaxEntries, emptyEntry);
+    tlbVector = std::vector<tlbVectorEntry>(Config.TLBEntries, emptyEntry);
 }
 
 std::function<void(SwapEvent)> TLB::GetSwapHandler()
@@ -50,7 +51,7 @@ std::function<void(SwapEvent)> TLB::GetSwapHandler()
         // You can see what page got evicted in the swapEvent
 
 
-        //int address = swapEvent.PAEvictedFromMainMemory;
+        int address = swapEvent.PAEvictedFromMainMemory;
         //if(!entryPresent(swapEvent.PAEvictedFromMainMemory)) return;
 
         //EvictEntry(swapEvent.PAEvictedFromMainMemory);
@@ -64,7 +65,7 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
     int i = 0;
     int addressFound = 0;
     TLBReturnType returnType{};
-    while(addressFound == 0 && i < TraceConfig::TLBMaxEntries)
+    while(addressFound == 0 && i < Config.TLBEntries)
     {
         if(tlbVector[i].virtualAddress == virtualAddress)
         {
@@ -85,11 +86,11 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
         returnType.TLBHit = false;
 
         //adding address to TLB since it was not in it
-        if(Config.TLBEntries == TraceConfig::TLBMaxEntries)
+        if(numValidEntries == Config.TLBEntries)
         {
             int physicalAddress = tlbVector[0].physicalAddress;
             double oldestEntryTime = tlbVector[0].lastTimeAccessed;
-            for(int k = 0; k < TraceConfig::TLBMaxEntries; k++)
+            for(int k = 0; k < Config.TLBEntries; k++)
             {
                 if(tlbVector[k].lastTimeAccessed < oldestEntryTime)
                 {
@@ -113,7 +114,7 @@ void TLB::EvictEntry(int physicalAddress)
 {
     int i = 0;
     int addressFound = 0;
-    while(i < TraceConfig::TLBMaxEntries && addressFound == 0)
+    while(i < Config.TLBEntries && addressFound == 0)
     {
         if(tlbVector[i].physicalAddress == physicalAddress)
         {
@@ -122,13 +123,14 @@ void TLB::EvictEntry(int physicalAddress)
         }
         i++;
     }
+    numValidEntries--;
 }
 
 void TLB::AddEntry(tlbVectorEntry newEntry)
 {
     int i = 0;
     int locationFound = 0;
-    while(i < TraceConfig::TLBMaxEntries && locationFound == 0)
+    while(i < Config.TLBEntries && locationFound == 0)
     {
         if(!tlbVector[i].isValid)
         {
@@ -136,6 +138,7 @@ void TLB::AddEntry(tlbVectorEntry newEntry)
             tlbVector[i] = newEntry;
         }
     }
+    numValidEntries++;
 }
 
 int TLB::GetHits()
@@ -159,7 +162,7 @@ int TLB::GetPageTableReferences()
 bool TLB::entryPresent(int physicalAddress) {
     int i = 0;
     bool entryFound = false;
-    while(i < TraceConfig::TLBMaxEntries && !entryFound)
+    while(i < Config.TLBEntries && !entryFound)
     {
         if(tlbVector[i].physicalAddress == physicalAddress)
         {
