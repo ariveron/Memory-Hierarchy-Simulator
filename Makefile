@@ -1,5 +1,4 @@
 # Commands not associated with a file
-# Commands not associated with a file
 .PHONY: all setup clean rebuild run test1 test2 test3
 all: setup bin/memory-hierarchy-simulator
 setup:
