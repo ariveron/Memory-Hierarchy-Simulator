@@ -47,7 +47,7 @@ void CPU::Run(Trace& trace)
     // Make query to PT if using VAs but not TLB
     else if (Config.UseVirtualAddreses)
     {
-      auto ptReturn = PT.GetPhysicalAddress(entry.Address);
+      auto ptReturn = PT.GetPhysicalAddress(entry.Address, entry.IsWrite);
       physicalAddress = ptReturn.PhysicalAddress;
       isTLBHit = false;
       isPTHit = ptReturn.PTHit;
