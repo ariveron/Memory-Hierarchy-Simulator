@@ -82,7 +82,7 @@
   | PT |---- Publisher --->| p |
    ----                    |   |
    ----                    | S |
-  | DC |<--- Subcriber --->| u |
+  | DC |<--- Subcriber ----| u |
    ----                    | b |
                            | j |
                            | e |
