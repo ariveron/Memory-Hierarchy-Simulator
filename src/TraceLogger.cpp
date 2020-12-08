@@ -12,7 +12,7 @@ void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHi
 {
   auto virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
   auto pageOffset = virtualAddress & ((2 << (Config.BitsPageTableOffset - 1)) - 1);
-  auto physicalPageNumber = physicalAddress >> Config.BitsPageTableOffset;
+  auto physicalPageNumber = (physicalAddress >> Config.BitsPageTableOffset)/Config.PageTablePageSize;
   auto dataCacheTag = (physicalAddress & ((2 << (Config.BitsDataCacheTag + Config.BitsDataCacheIndex + Config.BitsDataCacheOffset - 1)) - 1))
     >> (Config.BitsDataCacheIndex + Config.BitsDataCacheOffset);
   auto dataCacheIndex = (physicalAddress & ((2 << (Config.BitsDataCacheIndex + Config.BitsDataCacheOffset - 1)) - 1))
