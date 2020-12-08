@@ -9,13 +9,22 @@
 #include <functional>
 #include <vector>
 
+struct tlbVectorEntry
+{
+  int virtualAddress;
+  int physicalAddress;
+  int virtualPageNumber;
+  double lastTimeAccessed;
+  bool isValid;
+};
+
 class TLB: public ITranslationBuffer
 {
 public:
   TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject);
   
   // Methods from interface
-  TLBReturnType GetPhysicalAddress(int virtualAddress) override;
+  TLBReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
   int GetHits() override;
   int GetMisses() override;
   int GetPageTableReferences() override;
@@ -25,19 +34,12 @@ private:
   IPageTable& PT;
   void EvictEntry(int physicalAddress);
 
-  // TODO
   // Any additional properties and methods
-  int numHits{};
-  int numMisses{};
-  int numPTRefs{};
+  int numHits;
+  int numMisses;
+  int numPTRefs;
+  int numValidEntries;
 
-  struct tlbVectorEntry
-  {
-    int virtualAddress;
-    int physicalAddress;
-    double lastTimeAccessed;
-    bool isValid;
-  };
   void AddEntry(tlbVectorEntry newEntry);
   std::vector<tlbVectorEntry> tlbVector;
   bool entryPresent(int memory);

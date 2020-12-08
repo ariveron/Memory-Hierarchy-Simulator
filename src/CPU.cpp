@@ -39,7 +39,7 @@ void CPU::Run(Trace& trace)
     // Make query to TLB if using VAs and TLB
     if (Config.UseVirtualAddreses && Config.UseTLB)
     {
-      auto tlbReturn = TLB.GetPhysicalAddress(entry.Address);
+      auto tlbReturn = TLB.GetPhysicalAddress(entry.Address, entry.IsWrite);
       physicalAddress = tlbReturn.PhysicalAddress;
       isTLBHit = tlbReturn.TLBHit;
       isPTHit = tlbReturn.PTHit;
@@ -59,7 +59,10 @@ void CPU::Run(Trace& trace)
       isTLBHit = false;
       isPTHit = false;
     }
-    
+
+    // Make sure that PT is aware of write to a page
+    if (isTLBHit && entry.IsWrite) PT.SetDirtyFlag(physicalAddress);
+
     // Get info from DC about memory access
     bool isDCHit = DC.GetBlock(physicalAddress, entry.IsWrite).DCHit;
 
@@ -77,7 +80,7 @@ void CPU::PrintStatistics()
   auto dcHitRatio = static_cast<double>(DC.GetHits()) / (DC.GetHits() + DC.GetMisses());
   auto readRatio = static_cast<double>(TotalReads) / (TotalReads + TotalWrites);
 
-  std::cout << std::fixed << std::setprecision(6) <<
+  std::cout << std::dec << std::fixed << std::setprecision(6) <<
     "Simulation Statistics\n"
     "---------------------\n"
     "\n"

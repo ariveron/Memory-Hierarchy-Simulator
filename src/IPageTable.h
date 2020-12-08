@@ -16,6 +16,7 @@ public:
   virtual int GetHits() = 0;
   virtual int GetFaults() = 0;
   virtual int GetDiskReferences() = 0;
+  virtual void SetDirtyFlag(int physticalAddress) = 0;
 };
 
 #endif

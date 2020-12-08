@@ -26,6 +26,7 @@ public:
 	int GetHits() override;
 	int GetFaults() override;
 	int GetDiskReferences() override;
+	void SetDirtyFlag(int physicalAddress) override;
 
 private:
 	int DiskReference;

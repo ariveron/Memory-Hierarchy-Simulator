@@ -9,32 +9,21 @@
 #include <chrono>
 #include <limits>
 
-int numHits = 0;
-int numMisses = 0;
-int numPTRefs = 0;
-int numValidEntries = 0;
-
-struct tlbVectorEntry
-{
-    int virtualAddress;
-    int physicalAddress;
-    double lastTimeAccessed;
-    bool isValid;
-};
+#include <iostream>
 
 std::vector<tlbVectorEntry> tlbVector;
 
 TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
-        : Config { config }, PT { pt }
+        : Config { config }, PT { pt }, numHits { 0 }, numMisses { 0 }, numPTRefs { 0 }, numValidEntries { 0 }
 {
     // Subscribe to swap events
     swapSubject.Subscribe(GetSwapHandler());
 
-    // TODO
     // Any additional intialization
     tlbVectorEntry emptyEntry{};
-    emptyEntry.virtualAddress = 0;
-    emptyEntry.physicalAddress = 0;
+    emptyEntry.virtualAddress = -1;
+    emptyEntry.physicalAddress = -1;
+    emptyEntry.virtualPageNumber = -1;
     emptyEntry.lastTimeAccessed = 0;
     emptyEntry.isValid = false;
     tlbVector = std::vector<tlbVectorEntry>(Config.TLBEntries, emptyEntry);
@@ -50,16 +39,16 @@ std::function<void(SwapEvent)> TLB::GetSwapHandler()
     };
 }
 
-TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
+TLBReturnType TLB::GetPhysicalAddress(int virtualAddress, bool isWrite)
 {
-    // TODO
+    int virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
 
     int i = 0;
     int addressFound = 0;
     TLBReturnType returnType{};
     while(addressFound == 0 && i < Config.TLBEntries)
     {
-        if(tlbVector[i].virtualAddress == virtualAddress)
+        if(tlbVector[i].virtualPageNumber == virtualPageNumber)
         {
             addressFound = 1;
             numHits++;
@@ -67,12 +56,14 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
             returnType.PhysicalAddress = tlbVector[i].physicalAddress;
             returnType.PTHit = false;
         }
+        i++;
     }
+
     if(addressFound == 0)
     {
         numMisses++;
         numPTRefs++;
-        PTReturnType ptReturn = PT.GetPhysicalAddress(virtualAddress);
+        PTReturnType ptReturn = PT.GetPhysicalAddress(virtualAddress, isWrite);
         returnType.PhysicalAddress = ptReturn.PhysicalAddress;
         returnType.PTHit = ptReturn.PTHit;
         returnType.TLBHit = false;
@@ -96,6 +87,7 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress)
         newEntry.physicalAddress = ptReturn.PhysicalAddress;
         newEntry.isValid = true;
         newEntry.virtualAddress = virtualAddress;
+        newEntry.virtualPageNumber = virtualPageNumber;
         newEntry.lastTimeAccessed = std::chrono::system_clock::now().time_since_epoch().count();
         AddEntry(newEntry);
     }
@@ -129,25 +121,23 @@ void TLB::AddEntry(tlbVectorEntry newEntry)
             locationFound = 1;
             tlbVector[i] = newEntry;
         }
+        i++;
     }
     numValidEntries++;
 }
 
 int TLB::GetHits()
 {
-    // TODO
     return numHits;
 }
 
 int TLB::GetMisses()
 {
-    // TODO
     return numMisses;
 }
 
 int TLB::GetPageTableReferences()
 {
-    // TODO
     return numPTRefs;
 }
 
@@ -160,6 +150,7 @@ bool TLB::entryPresent(int physicalAddress) {
         {
             entryFound = true;
         }
+        i++;
     }
     return entryFound;
 }

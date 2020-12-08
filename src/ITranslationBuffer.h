@@ -13,7 +13,7 @@ class ITranslationBuffer
 public:
   ITranslationBuffer() = default;
   virtual ~ITranslationBuffer() = default;
-  virtual TLBReturnType GetPhysicalAddress(int virtualAddress) = 0;
+  virtual TLBReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) = 0;
   virtual int GetHits() = 0;
   virtual int GetMisses() = 0;
   virtual int GetPageTableReferences() = 0;
