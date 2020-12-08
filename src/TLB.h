@@ -11,8 +11,7 @@
 
 struct tlbVectorEntry
 {
-  int virtualAddress;
-  int physicalAddress;
+  int physicalPageNumber;
   int virtualPageNumber;
   double lastTimeAccessed;
   bool isValid;
@@ -32,7 +31,7 @@ public:
 private:
   const TraceConfig& Config;
   IPageTable& PT;
-  void EvictEntry(int physicalAddress);
+  void EvictEntry(int physicalPageNumber);
 
   // Any additional properties and methods
   int numHits;
@@ -45,7 +44,8 @@ private:
   bool entryPresent(int memory);
 
   std::function<void(SwapEvent)> GetSwapHandler();
-
+  
+  int CalculatePhysicalAddress(int physicalPageNumber, int virtualAddress);
 };
 
 #endif

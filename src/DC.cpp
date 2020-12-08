@@ -216,7 +216,7 @@ int DC::GetIndex(int physicalAddress)
   auto idxBits = Config.BitsDataCacheIndex;
   auto offBits = Config.BitsDataCacheOffset;
 
-  return (physicalAddress & ((2 << (idxBits + offBits - 1)) - 1)) >> (offBits);
+  return (physicalAddress & ((1 << (idxBits + offBits)) - 1)) >> (offBits);
 }
 
 int DC::GetTag(int physicalAddress)
@@ -225,7 +225,7 @@ int DC::GetTag(int physicalAddress)
   auto idxBits = Config.BitsDataCacheIndex;
   auto offBits = Config.BitsDataCacheOffset;
 
-  return (physicalAddress & ((2 << (tagBits + idxBits + offBits - 1)) - 1)) >> (idxBits + offBits);
+  return (physicalAddress & ((1 << (tagBits + idxBits + offBits)) - 1)) >> (idxBits + offBits);
 }
 
 int DC::GetHits()

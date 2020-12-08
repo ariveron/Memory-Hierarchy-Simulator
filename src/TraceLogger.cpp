@@ -11,11 +11,11 @@ TraceLogger::TraceLogger(const TraceConfig& config)
 void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const
 {
   auto virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
-  auto pageOffset = virtualAddress & ((2 << (Config.BitsPageTableOffset - 1)) - 1);
+  auto pageOffset = virtualAddress & ((1 << Config.BitsPageTableOffset) - 1);
   auto physicalPageNumber = (physicalAddress >> Config.BitsPageTableOffset);
-  auto dataCacheTag = (physicalAddress & ((2 << (Config.BitsDataCacheTag + Config.BitsDataCacheIndex + Config.BitsDataCacheOffset - 1)) - 1))
+  auto dataCacheTag = (physicalAddress & ((1 << (Config.BitsDataCacheTag + Config.BitsDataCacheIndex + Config.BitsDataCacheOffset)) - 1))
     >> (Config.BitsDataCacheIndex + Config.BitsDataCacheOffset);
-  auto dataCacheIndex = (physicalAddress & ((2 << (Config.BitsDataCacheIndex + Config.BitsDataCacheOffset - 1)) - 1))
+  auto dataCacheIndex = (physicalAddress & ((1 << (Config.BitsDataCacheIndex + Config.BitsDataCacheOffset)) - 1))
     >> (Config.BitsDataCacheOffset);
 
   std::cout
