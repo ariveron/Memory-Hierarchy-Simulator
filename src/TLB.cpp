@@ -43,18 +43,10 @@ TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
 std::function<void(SwapEvent)> TLB::GetSwapHandler()
 {
     return [&](SwapEvent swapEvent) {
-        // TODO
-        // Gets called when a swap happens in the PT
-        // Has access to all properties of this object
-        // Do here whatever you need to do if a page got
-        // evicted from main memory that the TLB was caching
-        // You can see what page got evicted in the swapEvent
-
-
         int address = swapEvent.PAEvictedFromMainMemory;
-        //if(!entryPresent(swapEvent.PAEvictedFromMainMemory)) return;
+        if(!entryPresent(swapEvent.PAEvictedFromMainMemory)) return;
 
-        //EvictEntry(swapEvent.PAEvictedFromMainMemory);
+        EvictEntry(swapEvent.PAEvictedFromMainMemory);
     };
 }
 

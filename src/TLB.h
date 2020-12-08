@@ -42,7 +42,7 @@ private:
   std::vector<tlbVectorEntry> tlbVector;
   bool entryPresent(int memory);
 
-  static std::function<void(SwapEvent)> GetSwapHandler();
+  std::function<void(SwapEvent)> GetSwapHandler();
 
 };
 
