@@ -143,7 +143,7 @@
     |                        |  t r      |  s r
     |                        |  u e      |  i e
     |                        |  a s      |  c s
-                             |  l s      |  a s
+    |                        |  l s      |  a s
      \                       V           |  l
       \                    -----        /
        ------------ swap -| PT  |-------
