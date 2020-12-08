@@ -7,6 +7,7 @@
 #include "SwapSubject.h"
 
 #include <functional>
+#include <vector>
 
 class TLB: public ITranslationBuffer
 {
@@ -22,11 +23,27 @@ public:
 private:
   const TraceConfig& Config;
   IPageTable& PT;
-  
-  std::function<void(SwapEvent)> GetSwapHandler();
+  void EvictEntry(int physicalAddress);
 
   // TODO
   // Any additional properties and methods
+  int numHits{};
+  int numMisses{};
+  int numPTRefs{};
+
+  struct tlbVectorEntry
+  {
+    int virtualAddress;
+    int physicalAddress;
+    double lastTimeAccessed;
+    bool isValid;
+  };
+  void AddEntry(tlbVectorEntry newEntry);
+  std::vector<tlbVectorEntry> tlbVector;
+  bool entryPresent(int memory);
+
+  static std::function<void(SwapEvent)> GetSwapHandler();
+
 };
 
 #endif
