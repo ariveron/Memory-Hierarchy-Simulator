@@ -6,7 +6,7 @@
 #include <iostream>
 
 PT::PT(const TraceConfig& config, SwapSubject& swapSubject)
-	: Config{ config }, Swap{ swapSubject }, Hits{ 0 }, DiskReference{ 0 }
+	: Config{ config }, Swap{ swapSubject }, Hits{ 0 }, DiskReference{ 0 }, Faults { 0 }
 {
 	auto pageTable = std::vector<PTE>(Config.PageTablePhysicalPages);
 }
@@ -24,6 +24,8 @@ PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 	if (pageTable.empty()) 
 	{
 		DiskReference++;
+		Faults++;
+
 		pageTable.push_back(entry);
 		returnType.PTHit = false;
 		returnType.PhysicalAddress = entry.offset;
@@ -34,16 +36,18 @@ PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 	
 	if(returnType.PTHit)
 		return returnType;
+
+	DiskReference++;
+	Faults++;
 	
 	if (pageTable.size() < Config.PageTablePhysicalPages)
 	{
 		pageTable.push_back(entry);
-		returnType.PhysicalAddress = (((pageTable.size() - 1) * Config.PageTablePageSize) << Config.BitsPageTableOffset) + entry.offset;
+		returnType.PhysicalAddress = ((pageTable.size() - 1) * Config.PageTablePageSize) | entry.offset;
 		return returnType;
 	}
 	else
 	{
-		DiskReference++;
 		returnType = evictPage(entry);
 		return returnType;
 	}
@@ -58,7 +62,7 @@ PTReturnType PT::checkPT(PTE entry)
 		{   
 			Hits++;
 			returnType.PTHit = true;
-			returnType.PhysicalAddress = ((i * Config.PageTablePageSize) << Config.BitsPageTableOffset) + entry.offset;
+			returnType.PhysicalAddress = (i * Config.PageTablePageSize) | entry.offset;
 			pageTable[i].time = std::chrono::system_clock::now().time_since_epoch().count();
 			return returnType;
 			break;
@@ -88,7 +92,7 @@ PTReturnType PT::evictPage(PTE entry)
 	pageTable.assign(replace, entry);
 	
 	returnType.PTHit = false;
-	returnType.PhysicalAddress = ((replace * Config.PageTablePageSize) << Config.BitsPageTableOffset) + entry.offset;
+	returnType.PhysicalAddress = (replace * Config.PageTablePageSize) | entry.offset;
 	return returnType;
 }
 
@@ -98,6 +102,12 @@ void PT::publishEvent(int physicalAddress, int virtualAddress)
 	se.PAEvictedFromMainMemory = physicalAddress;
 	se.VAEvictedFromMainMemory = virtualAddress;
 	PT::Swap.Publish(se);
+}
+
+void PT::SetDirtyFlag(int physicalAddress)
+{
+	auto pageIndex = physicalAddress >> Config.BitsPageTableOffset;
+	pageTable[pageIndex].dirty = true;
 }
 
 int PT::GetHits()
