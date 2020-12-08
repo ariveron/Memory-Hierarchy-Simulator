@@ -1,0 +1,34 @@
+ ----                    ----- -----------------
+| DC |<-----------------| CPU |<-----           \
+ ----   Physical Address -----       \           \
+ / \                       |          \           \
+  |                        |  V A      |  P A      |
+  |                        |  i d      |  h d       
+  |                        |  r d      |  y d      T
+  |                        |  t r      |  s r      L
+  |                        |  u e      |  i e      B
+  |                        |  a s      |  c s       
+                           |  l s      |  a s      h
+   \                       V           |  l        i
+    \                    -----        /            t
+     \       ---------->| TLB |-------              
+      \     /         __ -----                     &
+       \   /           /|  |             
+        \ /           /    m                       w  
+         |           /     i                       r
+         | I P A    | P A  s                       i
+         | n h d    | h d  s                       t
+         | v y d    | y d  |                       e
+         | a s r    | s r  |  V A                   
+         | l i e    | i e  |  i d                  |
+         | d c s    | c s  |  r d                  | 
+         | a a s    | a s  |  t r                  |
+         | t l      | l    |  u e                  |
+         | e         \     |  a s                  |
+         |            \    |  l s                 /
+         |             \   V                     /
+         |               ----                   /
+         |              | PT |<-----------------
+         |               ----   Mark Page Dirty
+         |                 |    
+          ------- swap ----  
