@@ -75,10 +75,10 @@ void CPU::Run(Trace& trace)
 
 void CPU::PrintStatistics()
 {
-  auto tlbHitRatio = static_cast<double>(TLB.GetHits()) / (TLB.GetHits() + TLB.GetMisses());
-  auto ptHitRatio = static_cast<double>(PT.GetHits()) / (PT.GetHits() + PT.GetFaults());
-  auto dcHitRatio = static_cast<double>(DC.GetHits()) / (DC.GetHits() + DC.GetMisses());
-  auto readRatio = static_cast<double>(TotalReads) / (TotalReads + TotalWrites);
+  auto tlbHitRatio = TLB.GetHits() + TLB.GetMisses() == 0 ? 0 : static_cast<double>(TLB.GetHits()) / (TLB.GetHits() + TLB.GetMisses());
+  auto ptHitRatio = PT.GetHits() + PT.GetFaults() == 0 ? 0 : static_cast<double>(PT.GetHits()) / (PT.GetHits() + PT.GetFaults());
+  auto dcHitRatio = DC.GetHits() + DC.GetMisses() == 0 ? 0 : static_cast<double>(DC.GetHits()) / (DC.GetHits() + DC.GetMisses());
+  auto readRatio = TotalReads + TotalWrites == 0 ? 0 : static_cast<double>(TotalReads) / (TotalReads + TotalWrites);
 
   std::cout << std::dec << std::fixed << std::setprecision(6) <<
     "Simulation Statistics\n"
