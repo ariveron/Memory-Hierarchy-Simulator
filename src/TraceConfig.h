@@ -17,6 +17,7 @@ public:
   int PageTableVirtualPages;
   int PageTablePhysicalPages;
   int PageTablePageSize;
+  int DataCacheTotalines;
   int DataCacheSets;
   int DataCacheSetSize;
   int DataCacheLineSize;

@@ -72,8 +72,9 @@ TraceConfig::TraceConfig(const std::string& configFileName)
     PageTableVirtualPages = std::stoi(configMap[HeaderPageTableConfiguration][FieldNumberOfVirtualPages]);
     PageTablePhysicalPages = std::stoi(configMap[HeaderPageTableConfiguration][FieldNumberOfPhysicalPages]);
     PageTablePageSize = std::stoi(configMap[HeaderPageTableConfiguration][FieldPageSize]);
-    DataCacheSets = std::stoi(configMap[HeaderDataCacheConfiguration][FieldNumberOfEntries]);
+    DataCacheTotalines = std::stoi(configMap[HeaderDataCacheConfiguration][FieldNumberOfEntries]); 
     DataCacheSetSize = std::stoi(configMap[HeaderDataCacheConfiguration][FieldSetSize]);
+    DataCacheSets = DataCacheTotalines / DataCacheSetSize;
     DataCacheLineSize = std::stoi(configMap[HeaderDataCacheConfiguration][FieldLineSize]);
     DataCacheWriteThrough = configMap[HeaderDataCacheConfiguration][FieldWriteThrough] == FieldValueTrue; 
     UseVirtualAddreses = configMap[HeaderNoHeader][FieldVirtualAddresses] == FieldValueTrue;
@@ -83,6 +84,7 @@ TraceConfig::TraceConfig(const std::string& configFileName)
   {
     throw std::runtime_error("Unable to parse the trace.config file");
   }
+
 
   // Validate properties parsed from trace config
   if (TLBEntries <= 0

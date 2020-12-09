@@ -12,7 +12,7 @@
 CPU::CPU(const TraceConfig& config, const TraceLogger& logger,
     ITranslationBuffer& tlb, IPageTable& pt, IDataCache& dc)
   : Config { config }, Logger (logger), TotalReads { 0 }, TotalWrites { 0 },
-  TLB { tlb }, PT { pt }, DC { dc }
+  TLB { tlb }, PT { pt }, DC { dc }, PageTableReferences { 0 }
 {}
 
 void CPU::Run(Trace& trace)
@@ -51,6 +51,7 @@ void CPU::Run(Trace& trace)
       physicalAddress = ptReturn.PhysicalAddress;
       isTLBHit = false;
       isPTHit = ptReturn.PTHit;
+      PageTableReferences++;
     }
     // If not using VA then the entry address is the PA
     else
@@ -101,7 +102,7 @@ void CPU::PrintStatistics()
     "Ratio of reads:          " << readRatio << "\n"
     "\n"
     "Main memory references:  " << DC.GetMainMemoryReferences() << "\n"
-    "Page table references:   " << TLB.GetPageTableReferences() << "\n"
+    "Page table references:   " << TLB.GetPageTableReferences() + PageTableReferences << "\n"
     "Disk references:         " << PT.GetDiskReferences() << "\n"
     "\n"
     << std::flush;

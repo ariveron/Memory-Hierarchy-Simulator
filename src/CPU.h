@@ -24,6 +24,7 @@ private:
   IDataCache& DC;
   int TotalReads;
   int TotalWrites;
+  int PageTableReferences;
 };
 
 #endif

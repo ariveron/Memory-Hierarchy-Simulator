@@ -11,8 +11,6 @@
 
 #include <iostream>
 
-std::vector<tlbVectorEntry> tlbVector;
-
 TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
         : Config { config }, PT { pt }, numHits { 0 }, numMisses { 0 }, numPTRefs { 0 }, numValidEntries { 0 }
 {
@@ -25,13 +23,12 @@ TLB::TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject)
     emptyEntry.virtualPageNumber = -1;
     emptyEntry.lastTimeAccessed = 0;
     emptyEntry.isValid = false;
-    tlbVector = std::vector<tlbVectorEntry>(Config.TLBEntries, emptyEntry);
+    tlbVector = std::vector<tlbVectorEntry>(static_cast<size_t>(Config.TLBEntries), emptyEntry);
 }
 
 std::function<void(SwapEvent)> TLB::GetSwapHandler()
 {
     return [&](SwapEvent swapEvent) {
-        int address = swapEvent.PAEvictedFromMainMemory;
         if(!entryPresent(swapEvent.PAEvictedFromMainMemory)) return;
 
         EvictEntry(swapEvent.PAEvictedFromMainMemory);
@@ -54,6 +51,7 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress, bool isWrite)
             returnType.TLBHit = true;
             returnType.PhysicalAddress = CalculatePhysicalAddress(tlbVector[i].physicalPageNumber, virtualAddress);
             returnType.PTHit = false;
+            tlbVector[i].lastTimeAccessed = std::chrono::system_clock::now().time_since_epoch().count();
         }
         i++;
     }
@@ -102,10 +100,10 @@ void TLB::EvictEntry(int physicalPageNumber)
         {
             pageNumberFound = 1;
             tlbVector[i].isValid = false;
+            numValidEntries--;
         }
         i++;
     }
-    numValidEntries--;
 }
 
 void TLB::AddEntry(tlbVectorEntry newEntry)
@@ -118,10 +116,10 @@ void TLB::AddEntry(tlbVectorEntry newEntry)
         {
             locationFound = 1;
             tlbVector[i] = newEntry;
+            numValidEntries++;
         }
         i++;
     }
-    numValidEntries++;
 }
 
 int TLB::GetHits()
@@ -144,7 +142,8 @@ bool TLB::entryPresent(int physicalAddress) {
     bool entryFound = false;
     while(i < Config.TLBEntries && !entryFound)
     {
-        if(tlbVector[i].physicalPageNumber == (physicalAddress >> Config.BitsPageTableOffset))
+        if(tlbVector[i].isValid 
+                && (tlbVector[i].physicalPageNumber == (physicalAddress >> Config.BitsPageTableOffset)))
         {
             entryFound = true;
         }

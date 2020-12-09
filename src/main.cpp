@@ -32,7 +32,6 @@ int main(int argc, char* argv[])
 
     // Parse the trace.config file
     TraceConfig config { commandParser.GetCommand("c") };
-
     // Get the memory trace in wrapper class for quick parsing
     Trace trace { commandParser.GetCommand("t") };
 

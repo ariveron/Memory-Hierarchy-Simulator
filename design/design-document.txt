@@ -33,11 +33,12 @@
 * Statistics *
 **************
 
- -----------------
-| CPU             |
-|  - Total Reads  |
-|  - Total Writes |
- -----------------
+ ---------------------------
+| CPU                       |
+|  - Total Reads            |
+|  - Total Writes           |
+|  - Main Memory References |
+ ---------------------------
  --------------------------
 | TLB                      |
 |  - Hits                  |
