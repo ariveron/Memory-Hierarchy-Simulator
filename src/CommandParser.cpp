@@ -4,7 +4,7 @@
 #include <string>
 #include <tuple>
 
-CommandParser::CommandParser(int argc, char** argv, std::string delimiter)
+CommandParser::CommandParser(long long argc, char** argv, std::string delimiter)
   : commands_{}
 {
   // Map out all of the arguments to commands and values
@@ -68,7 +68,7 @@ bool CommandParser::IsAnArg_(const char* arg, std::string delimiter)
   return delimiterIndex == delimiter.size() && arg[argIndex] != '\0';
 }
 
-// Returns <bool success, int result> where success is false if
+// Returns <bool success, long long result> where success is false if
 // command doesn't exist, has no value, or value does not convert
 // to the result type int
 std::tuple<bool,int> CommandParser::TryGetCommandAsInt(std::string command)
@@ -77,7 +77,7 @@ std::tuple<bool,int> CommandParser::TryGetCommandAsInt(std::string command)
 
   try
   {
-    int result = std::stoi(GetCommand(command));
+    long long result = std::stoi(GetCommand(command));
     return std::make_tuple(true, result);
   }
   catch (const std::exception&)

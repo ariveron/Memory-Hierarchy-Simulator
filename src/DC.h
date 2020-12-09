@@ -12,7 +12,7 @@ struct Line
 {
   bool IsValid;
   bool IsDirty;
-  int Tag;
+  long long Tag;
   double LastAccessTime;
 };
 
@@ -22,37 +22,37 @@ public:
   DC(const TraceConfig& config, SwapSubject& swapSubject);
 
   // Methods from interface
-  DCReturnType GetBlock(int physicalAddress, bool isWrite) override;
-  int GetHits() override;
-  int GetMisses() override;
-  int GetMainMemoryReferences() override;
+  DCReturnType GetBlock(long long physicalAddress, bool isWrite) override;
+  long long GetHits() override;
+  long long GetMisses() override;
+  long long GetMainMemoryReferences() override;
 
 private:
   const TraceConfig& Config;
   std::vector<std::vector<Line>> Cache; 
 
-  int TotalHits;
-  int TotalMisses;
-  int MainMemoryReferences;
+  long long TotalHits;
+  long long TotalMisses;
+  long long MainMemoryReferences;
 
-  void LoadLineFromMainMemory(int physicalAddress);
-  void EvictOldestLineFromSet(int physicalAddress);
-  bool IsSetFull(int physicalAddress);
-  void AccessCacheLine(int physicalAddress, bool isWrite);
-  void EvictLineFromCache(int physicalAddress);
-  bool IsLineInCache(int physicalAddress);
+  void LoadLineFromMainMemory(long long physicalAddress);
+  void EvictOldestLineFromSet(long long physicalAddress);
+  bool IsSetFull(long long physicalAddress);
+  void AccessCacheLine(long long physicalAddress, bool isWrite);
+  void EvictLineFromCache(long long physicalAddress);
+  bool IsLineInCache(long long physicalAddress);
 
-  void ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda);
+  void ForEachCacheLineInSet(long long index, std::function<void(Line&)> lambda);
 
-  int GetTag(int physicalAddress);
-  int GetIndex(int physicalAddress);
+  long long GetTag(long long physicalAddress);
+  long long GetIndex(long long physicalAddress);
 
   std::function<void(SwapEvent)> GetSwapHandler();
 
   // For debuging
   void PrintCache(const char* msg = "");
-  void PrintSet(int index, const char* msg = "");
-  void PrintTagAndIndex(int tag, int index, const char* msg = "");
+  void PrintSet(long long index, const char* msg = "");
+  void PrintTagAndIndex(long long tag, long long index, const char* msg = "");
 };
 
 #endif

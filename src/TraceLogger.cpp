@@ -8,7 +8,7 @@ TraceLogger::TraceLogger(const TraceConfig& config)
   : Config { config }
 {}
 
-void TraceLogger::PrintLog(int virtualAddress, int physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const
+void TraceLogger::PrintLog(long long virtualAddress, long long physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const
 {
   auto virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
   auto pageOffset = virtualAddress & ((1 << Config.BitsPageTableOffset) - 1);

@@ -6,8 +6,8 @@
 
 struct SwapEvent
 {
-  int VAEvictedFromMainMemory;
-  int PAEvictedFromMainMemory;
+  long long VAEvictedFromMainMemory;
+  long long PAEvictedFromMainMemory;
 };
 
 class SwapSubject

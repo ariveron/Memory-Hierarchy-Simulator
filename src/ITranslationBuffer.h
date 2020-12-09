@@ -3,7 +3,7 @@
 
 struct TLBReturnType
 {
-  int PhysicalAddress;
+  long long PhysicalAddress;
   bool TLBHit;
   bool PTHit;
 };
@@ -13,10 +13,10 @@ class ITranslationBuffer
 public:
   ITranslationBuffer() = default;
   virtual ~ITranslationBuffer() = default;
-  virtual TLBReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) = 0;
-  virtual int GetHits() = 0;
-  virtual int GetMisses() = 0;
-  virtual int GetPageTableReferences() = 0;
+  virtual TLBReturnType GetPhysicalAddress(long long virtualAddress, bool isWrite) = 0;
+  virtual long long GetHits() = 0;
+  virtual long long GetMisses() = 0;
+  virtual long long GetPageTableReferences() = 0;
 };
 
 #endif

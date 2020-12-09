@@ -32,7 +32,7 @@ void CPU::Run(Trace& trace)
     else TotalReads++;
 
     // Get the physical address and TLB/PT info
-    int physicalAddress;
+    long long physicalAddress;
     bool isTLBHit;
     bool isPTHit;
 

@@ -7,7 +7,7 @@ class TraceLogger
 {
 public:
   TraceLogger(const TraceConfig& config);
-  void PrintLog(int virtualAddress, int physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const;
+  void PrintLog(long long virtualAddress, long long physicalAddress, bool isTLBHit, bool isPTHit, bool isDCHit) const;
   void PrintLogHeader() const;
   void PrintLogFooter() const;
 

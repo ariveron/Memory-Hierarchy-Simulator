@@ -11,7 +11,7 @@ PT::PT(const TraceConfig& config, SwapSubject& swapSubject)
 	auto pageTable = std::vector<PTE>(Config.PageTablePhysicalPages);
 }
 
-PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
+PTReturnType PT::GetPhysicalAddress(long long virtualAddress, bool isWrite)
 {
 	PTReturnType returnType;
 	PTE entry;
@@ -56,7 +56,7 @@ PTReturnType PT::GetPhysicalAddress(int virtualAddress, bool isWrite)
 PTReturnType PT::checkPT(PTE entry)
 {	
 	PTReturnType returnType;
-	for (int i = 0; i < pageTable.size(); i++)
+	for (long long i = 0; i < pageTable.size(); i++)
 	{
 		if (pageTable[i].virtualPage == entry.virtualPage)
 		{   
@@ -77,7 +77,7 @@ PTReturnType PT::evictPage(PTE entry)
 	PTReturnType returnType;
 	auto replace = 0;
 	auto current = std::numeric_limits<double>::max();
-	for (int i = 1; i < Config.PageTablePhysicalPages; i++)
+	for (long long i = 1; i < Config.PageTablePhysicalPages; i++)
 	{
 		if (pageTable[i].time < current)
 		{
@@ -96,7 +96,7 @@ PTReturnType PT::evictPage(PTE entry)
 	return returnType;
 }
 
-void PT::publishEvent(int physicalAddress, int virtualAddress)
+void PT::publishEvent(long long physicalAddress, long long virtualAddress)
 {
 	SwapEvent se;
 	se.PAEvictedFromMainMemory = physicalAddress;
@@ -104,23 +104,23 @@ void PT::publishEvent(int physicalAddress, int virtualAddress)
 	PT::Swap.Publish(se);
 }
 
-void PT::SetDirtyFlag(int physicalAddress)
+void PT::SetDirtyFlag(long long physicalAddress)
 {
 	auto pageIndex = physicalAddress >> Config.BitsPageTableOffset;
 	pageTable[pageIndex].dirty = true;
 }
 
-int PT::GetHits()
+long long PT::GetHits()
 {
 	return Hits;
 }
 
-int PT::GetFaults()
+long long PT::GetFaults()
 {
 	return Faults;
 }
 
-int PT::GetDiskReferences()
+long long PT::GetDiskReferences()
 {
 	return DiskReference;
 }

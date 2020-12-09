@@ -35,12 +35,12 @@ std::function<void(SwapEvent)> TLB::GetSwapHandler()
     };
 }
 
-TLBReturnType TLB::GetPhysicalAddress(int virtualAddress, bool isWrite)
+TLBReturnType TLB::GetPhysicalAddress(long long virtualAddress, bool isWrite)
 {
-    int virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
+    long long virtualPageNumber = virtualAddress >> Config.BitsPageTableOffset;
 
-    int i = 0;
-    int addressFound = 0;
+    long long i = 0;
+    long long addressFound = 0;
     TLBReturnType returnType{};
     while(addressFound == 0 && i < Config.TLBEntries)
     {
@@ -68,9 +68,9 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress, bool isWrite)
         //adding address to TLB since it was not in it
         if(numValidEntries == Config.TLBEntries)
         {
-            int physicalPageNumber = tlbVector[0].physicalPageNumber;
+            long long physicalPageNumber = tlbVector[0].physicalPageNumber;
             double oldestEntryTime = tlbVector[0].lastTimeAccessed;
-            for(int k = 0; k < Config.TLBEntries; k++)
+            for(long long k = 0; k < Config.TLBEntries; k++)
             {
                 if(tlbVector[k].lastTimeAccessed < oldestEntryTime)
                 {
@@ -90,10 +90,10 @@ TLBReturnType TLB::GetPhysicalAddress(int virtualAddress, bool isWrite)
     return returnType;
 }
 
-void TLB::EvictEntry(int physicalPageNumber)
+void TLB::EvictEntry(long long physicalPageNumber)
 {
-    int i = 0;
-    int pageNumberFound = 0;
+    long long i = 0;
+    long long pageNumberFound = 0;
     while(i < Config.TLBEntries && pageNumberFound == 0)
     {
         if(tlbVector[i].physicalPageNumber == physicalPageNumber)
@@ -108,8 +108,8 @@ void TLB::EvictEntry(int physicalPageNumber)
 
 void TLB::AddEntry(tlbVectorEntry newEntry)
 {
-    int i = 0;
-    int locationFound = 0;
+    long long i = 0;
+    long long locationFound = 0;
     while(i < Config.TLBEntries && locationFound == 0)
     {
         if(!tlbVector[i].isValid)
@@ -122,23 +122,23 @@ void TLB::AddEntry(tlbVectorEntry newEntry)
     }
 }
 
-int TLB::GetHits()
+long long TLB::GetHits()
 {
     return numHits;
 }
 
-int TLB::GetMisses()
+long long TLB::GetMisses()
 {
     return numMisses;
 }
 
-int TLB::GetPageTableReferences()
+long long TLB::GetPageTableReferences()
 {
     return numPTRefs;
 }
 
-bool TLB::entryPresent(int physicalAddress) {
-    int i = 0;
+bool TLB::entryPresent(long long physicalAddress) {
+    long long i = 0;
     bool entryFound = false;
     while(i < Config.TLBEntries && !entryFound)
     {
@@ -152,7 +152,7 @@ bool TLB::entryPresent(int physicalAddress) {
     return entryFound;
 }
 
-int TLB::CalculatePhysicalAddress(int physicalPageNumber, int virtualAddress)
+long long TLB::CalculatePhysicalAddress(long long physicalPageNumber, long long virtualAddress)
 {
     // Combine physical page number bits with virtual page offset bits to get physical address
     return (physicalPageNumber << Config.BitsPageTableOffset) | (virtualAddress & ((1 << Config.BitsPageTableOffset) - 1));

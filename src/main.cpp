@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     // Run simulation and output results
     cpu.Run(trace);
 
-    // Print statistics
+    // Prlong long statistics
     cpu.PrintStatistics();
   }
   catch(std::exception& e)

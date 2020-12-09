@@ -8,7 +8,7 @@
 class CommandParser
 {
 public:
-  CommandParser(int argc, char** argv, std::string delimiter);
+  CommandParser(long long argc, char** argv, std::string delimiter);
   bool IsCommandPresent(std::string command);
   bool IsCommandEmpty(std::string command);
   std::string GetCommand(std::string command);

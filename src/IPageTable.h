@@ -3,7 +3,7 @@
 
 struct PTReturnType 
 {
-  int PhysicalAddress;
+  long long PhysicalAddress;
   bool PTHit; 
 };
 
@@ -12,11 +12,11 @@ class IPageTable
 public:
   IPageTable() = default;
   virtual ~IPageTable() = default;
-  virtual PTReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) = 0;
-  virtual int GetHits() = 0;
-  virtual int GetFaults() = 0;
-  virtual int GetDiskReferences() = 0;
-  virtual void SetDirtyFlag(int physticalAddress) = 0;
+  virtual PTReturnType GetPhysicalAddress(long long virtualAddress, bool isWrite) = 0;
+  virtual long long GetHits() = 0;
+  virtual long long GetFaults() = 0;
+  virtual long long GetDiskReferences() = 0;
+  virtual void SetDirtyFlag(long long physticalAddress) = 0;
 };
 
 #endif

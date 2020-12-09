@@ -11,10 +11,10 @@ class IDataCache
 public:
   IDataCache() = default;
   virtual ~IDataCache() = default;
-  virtual DCReturnType GetBlock(int physicalAddress, bool isWrite) = 0;
-  virtual int GetHits() = 0;
-  virtual int GetMisses() = 0;
-  virtual int GetMainMemoryReferences() = 0;
+  virtual DCReturnType GetBlock(long long physicalAddress, bool isWrite) = 0;
+  virtual long long GetHits() = 0;
+  virtual long long GetMisses() = 0;
+  virtual long long GetMainMemoryReferences() = 0;
 };
 
 #endif

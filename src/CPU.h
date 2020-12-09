@@ -22,9 +22,9 @@ private:
   ITranslationBuffer& TLB;
   IPageTable& PT;
   IDataCache& DC;
-  int TotalReads;
-  int TotalWrites;
-  int PageTableReferences;
+  long long TotalReads;
+  long long TotalWrites;
+  long long PageTableReferences;
 };
 
 #endif

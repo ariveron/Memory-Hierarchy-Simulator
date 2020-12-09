@@ -7,7 +7,7 @@
 struct TraceEntry
 {
   bool IsWrite;
-  int Address;
+  long long Address;
 };
 
 class Trace

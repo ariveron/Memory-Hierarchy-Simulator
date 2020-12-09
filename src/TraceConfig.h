@@ -6,31 +6,31 @@
 class TraceConfig
 {
 public:
-  const static int TLBMaxEntries;
-  const static int PageTableMaxVirtualPages;
-  const static int PageTableMaxPhysicalPages;
-  const static int DataCacheMaxSets;
-  const static int DataCacheMaxSetSize;
-  const static int DataCacheMinLineSize;
+  const static long long TLBMaxEntries;
+  const static long long PageTableMaxVirtualPages;
+  const static long long PageTableMaxPhysicalPages;
+  const static long long DataCacheMaxSets;
+  const static long long DataCacheMaxSetSize;
+  const static long long DataCacheMinLineSize;
 
-  int TLBEntries;
-  int PageTableVirtualPages;
-  int PageTablePhysicalPages;
-  int PageTablePageSize;
-  int DataCacheTotalines;
-  int DataCacheSets;
-  int DataCacheSetSize;
-  int DataCacheLineSize;
+  long long TLBEntries;
+  long long PageTableVirtualPages;
+  long long PageTablePhysicalPages;
+  long long PageTablePageSize;
+  long long DataCacheTotalines;
+  long long DataCacheSets;
+  long long DataCacheSetSize;
+  long long DataCacheLineSize;
   bool DataCacheWriteThrough;
   bool UseVirtualAddreses;
   bool UseTLB;
 
-  int MainMemorySize;
-  int BitsPageTableOffset;
-  int BitsPageTableIndex;
-  int BitsDataCacheTag;
-  int BitsDataCacheIndex;
-  int BitsDataCacheOffset;
+  long long MainMemorySize;
+  long long BitsPageTableOffset;
+  long long BitsPageTableIndex;
+  long long BitsDataCacheTag;
+  long long BitsDataCacheIndex;
+  long long BitsDataCacheOffset;
 
   TraceConfig(const std::string& configFileName);
   void PrintConfiguration() const;

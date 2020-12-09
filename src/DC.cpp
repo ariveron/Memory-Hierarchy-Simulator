@@ -39,7 +39,7 @@ std::function<void(SwapEvent)> DC::GetSwapHandler()
   };
 }
 
-DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
+DCReturnType DC::GetBlock(long long physicalAddress, bool isWrite)
 {
   auto isCacheHit = IsLineInCache(physicalAddress); 
 
@@ -62,7 +62,7 @@ DCReturnType DC::GetBlock(int physicalAddress, bool isWrite)
   return DCReturnType { isCacheHit };
 }
 
-void DC::LoadLineFromMainMemory(int physicalAddress)
+void DC::LoadLineFromMainMemory(long long physicalAddress)
 {
   // One memory reference to read from memory into cache
   MainMemoryReferences++;
@@ -92,7 +92,7 @@ void DC::LoadLineFromMainMemory(int physicalAddress)
       });
 }
 
-void DC::EvictOldestLineFromSet(int physicalAddress)
+void DC::EvictOldestLineFromSet(long long physicalAddress)
 {
   // Get the index for findin the sest
   auto index = GetIndex(physicalAddress);
@@ -124,7 +124,7 @@ void DC::EvictOldestLineFromSet(int physicalAddress)
       });
 }
 
-bool DC::IsSetFull(int physicalAddress)
+bool DC::IsSetFull(long long physicalAddress)
 {
   bool isSetfull = true;
 
@@ -139,7 +139,7 @@ bool DC::IsSetFull(int physicalAddress)
   return isSetfull;
 }
 
-void DC::AccessCacheLine(int physicalAddress, bool isWrite)
+void DC::AccessCacheLine(long long physicalAddress, bool isWrite)
 {
   // Get index and tag for identifying cache line
   auto index = GetIndex(physicalAddress);
@@ -165,7 +165,7 @@ void DC::AccessCacheLine(int physicalAddress, bool isWrite)
       });
 }
 
-void DC::EvictLineFromCache(int physicalAddress)
+void DC::EvictLineFromCache(long long physicalAddress)
 {
   // Get index and tag for identifying cache line
   auto index = GetIndex(physicalAddress);
@@ -183,7 +183,7 @@ void DC::EvictLineFromCache(int physicalAddress)
       });
 }
 
-bool DC::IsLineInCache(int physicalAddress)
+bool DC::IsLineInCache(long long physicalAddress)
 {
   auto isFound = false;
   
@@ -199,7 +199,7 @@ bool DC::IsLineInCache(int physicalAddress)
   return isFound;
 }
 
-void DC::ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda)
+void DC::ForEachCacheLineInSet(long long index, std::function<void(Line&)> lambda)
 {
   // Get the set that corresponds with the index
   auto& indexedSet = Cache.at(index);
@@ -211,7 +211,7 @@ void DC::ForEachCacheLineInSet(int index, std::function<void(Line&)> lambda)
   }
 }
 
-int DC::GetIndex(int physicalAddress)
+long long DC::GetIndex(long long physicalAddress)
 {
   auto idxBits = Config.BitsDataCacheIndex;
   auto offBits = Config.BitsDataCacheOffset;
@@ -219,7 +219,7 @@ int DC::GetIndex(int physicalAddress)
   return (physicalAddress & ((1 << (idxBits + offBits)) - 1)) >> (offBits);
 }
 
-int DC::GetTag(int physicalAddress)
+long long DC::GetTag(long long physicalAddress)
 {
   auto tagBits = Config.BitsDataCacheTag;
   auto idxBits = Config.BitsDataCacheIndex;
@@ -228,17 +228,17 @@ int DC::GetTag(int physicalAddress)
   return (physicalAddress & ((1 << (tagBits + idxBits + offBits)) - 1)) >> (idxBits + offBits);
 }
 
-int DC::GetHits()
+long long DC::GetHits()
 {
   return TotalHits;
 }
 
-int DC::GetMisses()
+long long DC::GetMisses()
 {
   return TotalMisses;
 }
 
-int DC::GetMainMemoryReferences()
+long long DC::GetMainMemoryReferences()
 {
   return MainMemoryReferences;
 }
@@ -251,7 +251,7 @@ void DC::PrintCache(const char* msg)
   }
 }
 
-void DC::PrintSet(int index, const char* msg)
+void DC::PrintSet(long long index, const char* msg)
 {
   auto& cacheSet = Cache.at(index);
 
@@ -261,7 +261,7 @@ void DC::PrintSet(int index, const char* msg)
   }
 }
 
-void DC::PrintTagAndIndex(int tag, int index, const char* msg)
+void DC::PrintTagAndIndex(long long tag, long long index, const char* msg)
 {
   std::cout << msg << "tag=" << tag << " index=" << index << std::endl;
 }

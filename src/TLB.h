@@ -11,8 +11,8 @@
 
 struct tlbVectorEntry
 {
-  int physicalPageNumber;
-  int virtualPageNumber;
+  long long physicalPageNumber;
+  long long virtualPageNumber;
   double lastTimeAccessed;
   bool isValid;
 };
@@ -23,29 +23,29 @@ public:
   TLB(const TraceConfig& config, IPageTable& pt, SwapSubject& swapSubject);
   
   // Methods from interface
-  TLBReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
-  int GetHits() override;
-  int GetMisses() override;
-  int GetPageTableReferences() override;
+  TLBReturnType GetPhysicalAddress(long long virtualAddress, bool isWrite) override;
+  long long GetHits() override;
+  long long GetMisses() override;
+  long long GetPageTableReferences() override;
 
 private:
   const TraceConfig& Config;
   IPageTable& PT;
-  void EvictEntry(int physicalPageNumber);
+  void EvictEntry(long long physicalPageNumber);
 
   // Any additional properties and methods
-  int numHits;
-  int numMisses;
-  int numPTRefs;
-  int numValidEntries;
+  long long numHits;
+  long long numMisses;
+  long long numPTRefs;
+  long long numValidEntries;
 
   void AddEntry(tlbVectorEntry newEntry);
   std::vector<tlbVectorEntry> tlbVector;
-  bool entryPresent(int memory);
+  bool entryPresent(long long memory);
 
   std::function<void(SwapEvent)> GetSwapHandler();
   
-  int CalculatePhysicalAddress(int physicalPageNumber, int virtualAddress);
+  long long CalculatePhysicalAddress(long long physicalPageNumber, long long virtualAddress);
 };
 
 #endif

@@ -13,30 +13,30 @@ public:
 	{
 		bool valid;
 		bool dirty;
-		int virtualAddress;
-		int virtualPage;
-		int offset;
+		long long virtualAddress;
+		long long virtualPage;
+		long long offset;
 		double time;
 	};
 	std::vector<PTE> pageTable;
 	PT(const TraceConfig& config, SwapSubject& swapSubject);
 	
 	// Methods from interface
-	PTReturnType GetPhysicalAddress(int virtualAddress, bool isWrite) override;
-	int GetHits() override;
-	int GetFaults() override;
-	int GetDiskReferences() override;
-	void SetDirtyFlag(int physicalAddress) override;
+	PTReturnType GetPhysicalAddress(long long virtualAddress, bool isWrite) override;
+	long long GetHits() override;
+	long long GetFaults() override;
+	long long GetDiskReferences() override;
+	void SetDirtyFlag(long long physicalAddress) override;
 
 private:
-	int DiskReference;
-	int Hits;
-	int Faults;
+	long long DiskReference;
+	long long Hits;
+	long long Faults;
 	const TraceConfig& Config;
 	SwapSubject& Swap;
 	PTReturnType checkPT(PTE entry);
 	PTReturnType evictPage(PTE entry);
-	void publishEvent(int physicalAddress, int virtualAddress);
+	void publishEvent(long long physicalAddress, long long virtualAddress);
 };
 
 #endif

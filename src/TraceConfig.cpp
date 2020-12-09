@@ -8,12 +8,12 @@
 #include <cmath>
 #include <iostream>
 
-const int TraceConfig::TLBMaxEntries = 256;
-const int TraceConfig::DataCacheMaxSets = 1024;
-const int TraceConfig::DataCacheMaxSetSize = 8;
-const int TraceConfig::DataCacheMinLineSize = 8;
-const int TraceConfig::PageTableMaxVirtualPages = 8192;
-const int TraceConfig::PageTableMaxPhysicalPages = 1024;
+const long long TraceConfig::TLBMaxEntries = 256;
+const long long TraceConfig::DataCacheMaxSets = 1024;
+const long long TraceConfig::DataCacheMaxSetSize = 8;
+const long long TraceConfig::DataCacheMinLineSize = 8;
+const long long TraceConfig::PageTableMaxVirtualPages = 8192;
+const long long TraceConfig::PageTableMaxPhysicalPages = 1024;
 
 const std::string TraceConfig::HeaderDataTLBConfiguration = "data tlb configuration";
 const std::string TraceConfig::HeaderPageTableConfiguration = "page table configuration";
