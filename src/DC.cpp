@@ -52,8 +52,17 @@ DCReturnType DC::GetBlock(long long physicalAddress, bool isWrite)
   {
     // Update internal count
     TotalMisses++;
-    // Load line from main memory into the data cache
-    LoadLineFromMainMemory(physicalAddress);
+
+    if (isWrite && Config.DataCacheWriteThrough)
+    {
+      // Don't load from memory if it's a write and write through
+      MainMemoryReferences++;
+    }
+    else
+    {
+      // Load line from main memory into the data cache
+      LoadLineFromMainMemory(physicalAddress);
+    }
   }
 
   // Process the data query
