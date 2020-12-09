@@ -37,7 +37,7 @@
 | CPU                       |
 |  - Total Reads            |
 |  - Total Writes           |
-|  - Main Memory References |
+|  - Page Table References  |
  ---------------------------
  --------------------------
 | TLB                      |
